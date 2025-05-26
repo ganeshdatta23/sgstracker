@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 60% 5%; /* Very Dark Blue */
+    --foreground: 240 20% 95%; /* Light Cool White/Blue */
+    
+    --card: 240 55% 10%; /* Lighter Dark Blue for cards */
+    --card-foreground: 240 20% 95%;
+    
+    --popover: 240 60% 4%; /* Even Darker Blue for popovers */
+    --popover-foreground: 240 20% 95%;
+    
+    --primary: 180 100% 85%; /* Bright Silver/Cyan */
+    --primary-foreground: 240 60% 5%; /* Dark Blue (for text on primary buttons) */
+    
+    --secondary: 270 80% 70%; /* Cosmic Purple */
+    --secondary-foreground: 240 20% 95%; /* Light Cool White/Blue */
+    
+    --accent: 200 100% 70%; /* Bright Celestial Blue */
+    --accent-foreground: 240 60% 5%; /* Dark Blue */
+    
+    --muted: 240 40% 20%; /* Muted Dark Blue */
+    --muted-foreground: 240 20% 75%; /* Muted Cool White/Blue */
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 240 50% 20%; /* Subtle Lighter Dark Blue for borders */
+    --input: 240 50% 20%;
+    --ring: 180 100% 70%; /* Bright Silver/Cyan for focus rings */
+    
+    --radius: 0.75rem;
+
+    /* Sidebar specific theme adjustments - review if this theme is kept */
+    --sidebar-background: 230 30% 8%; 
+    --sidebar-foreground: 220 25% 80%;
+    --sidebar-primary: 190 90% 60%; 
+    --sidebar-primary-foreground: 230 30% 10%;
+    --sidebar-accent: 260 70% 65%;
+    --sidebar-accent-foreground: 230 30% 10%;
+    --sidebar-border: 230 30% 15%;
+    --sidebar-ring: 190 80% 65%;
+  }
+
+  .dark {
+    /* Dark theme variables match the new root theme */
+    --background: 240 60% 5%;
+    --foreground: 240 20% 95%;
+    --card: 240 55% 10%;
+    --card-foreground: 240 20% 95%;
+    --popover: 240 60% 4%;
+    --popover-foreground: 240 20% 95%;
+    --primary: 180 100% 85%;
+    --primary-foreground: 240 60% 5%;
+    --secondary: 270 80% 70%;
+    --secondary-foreground: 240 20% 95%;
+    --muted: 240 40% 20%;
+    --muted-foreground: 240 20% 75%;
+    --accent: 200 100% 70%;
+    --accent-foreground: 240 60% 5%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 50% 20%;
+    --input: 240 50% 20%;
+    --ring: 180 100% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-geist-sans), sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-foreground;
+  }
+  a {
+    @apply text-primary hover:text-[hsl(var(--primary)/0.8)] transition-colors;
+  }
+}
+
+/* Starry background styles */
+@layer components {
+  .starry-background {
+    @apply fixed inset-0 z-[-10] overflow-hidden bg-background;
+  }
+  .stars-layer {
+    @apply absolute top-0 left-0 w-[200%] h-[200%] bg-repeat;
+    animation: moveStars 150s linear infinite;
+  }
+  .stars-layer.stars1 {
+    background-image: radial-gradient(1.5px 1.5px at 50px 100px, hsl(240 80% 90%), transparent),
+                      radial-gradient(1px 1px at 100px 200px, hsl(200 80% 90%), transparent),
+                      radial-gradient(2px 2px at 20px 300px, white, transparent);
+    background-size: 400px 400px, 500px 500px, 600px 600px;
+    animation-duration: 100s;
+  }
+  .stars-layer.stars2 {
+    background-image: radial-gradient(1px 1px at 70px 50px, hsl(240 70% 85%), transparent),
+                      radial-gradient(1.5px 1.5px at 150px 180px, hsl(180 70% 85%), transparent);
+    background-size: 450px 450px, 550px 550px;
+    animation-duration: 150s;
+    animation-delay: -30s;
+  }
+  .stars-layer.stars3 {
+    background-image: radial-gradient(0.8px 0.8px at 30px 120px, white, transparent),
+                      radial-gradient(1.2px 1.2px at 180px 250px, hsl(220 80% 90%), transparent);
+    background-size: 350px 350px, 500px 500px;
+    animation-duration: 200s;
+    animation-delay: -60s;
+  }
+}
+
+@keyframes moveStars {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-50%, -50%); /* Move diagonally */
+  }
+}
+
+/* Font import for Sanskrit */
+@font-face {
+  font-family: 'Sanskrit_2003';
+  src: url('/fonts/Sanskrit2003.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

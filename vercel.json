@@ -1,0 +1,43 @@
+{
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://kpqwrcjtubmuxcegltty.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwcXdyY2p0dWJtdXhjZWdsdHR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMzI1MjMsImV4cCI6MjA2MzYwODUyM30.y84yzzcxaevq9VDDEfFG7wo1-OHnlbm2OHM-KQQ1aLo",
+    "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwcXdyY2p0dWJtdXhjZWdsdHR5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODAzMjUyMywiZXhwIjoyMDYzNjA4NTIzfQ.hg1UPajKifRwxT0p68CHBo2leWIaMtXtCASeK67Jkbs",
+    "SUPABASE_JWT_SECRET": "vkOsu2mLeTARfaEkiZD5NY6M7SbAL3pdSZ2JD6GVuhwycUVd3Y35D0lWskpsOPFJ19NyKq0p66NXnpKY5d3uQw==",
+    "POSTGRES_URL": "postgres://postgres.kpqwrcjtubmuxcegltty:bcksJp5cPSu6x2Yc@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require&supa=base-pooler.x",
+    "POSTGRES_PRISMA_URL": "postgres://postgres.kpqwrcjtubmuxcegltty:bcksJp5cPSu6x2Yc@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require&supa=base-pooler.x",
+    "POSTGRES_URL_NON_POOLING": "postgres://postgres.kpqwrcjtubmuxcegltty:bcksJp5cPSu6x2Yc@aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require",
+    "POSTGRES_USER": "postgres",
+    "POSTGRES_PASSWORD": "bcksJp5cPSu6x2Yc",
+    "POSTGRES_HOST": "db.kpqwrcjtubmuxcegltty.supabase.co",
+    "POSTGRES_DATABASE": "postgres",
+    "ADMIN_SECRET_TOKEN": "Appaji@1942",
+    "GEMINI_API_KEY": "AIzaSyAJLv6uVq_7rW4alzBbPbBns9kuAghsI4Y",
+    "TELEGRAM_BOT_TOKEN": "7795442330:AAGooq73uC2rps5DJgpdaVX-47wKGfNSMWU",
+    "TELEGRAM_AUTHORIZED_CHAT_ID": "857007796"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_SUPABASE_URL": "https://kpqwrcjtubmuxcegltty.supabase.co",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwcXdyY2p0dWJtdXhjZWdsdHR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMzI1MjMsImV4cCI6MjA2MzYwODUyM30.y84yzzcxaevq9VDDEfFG7wo1-OHnlbm2OHM-KQQ1aLo",
+      "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwcXdyY2p0dWJtdXhjZWdsdHR5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODAzMjUyMywiZXhwIjoyMDYzNjA4NTIzfQ.hg1UPajKifRwxT0p68CHBo2leWIaMtXtCASeK67Jkbs",
+      "SUPABASE_JWT_SECRET": "vkOsu2mLeTARfaEkiZD5NY6M7SbAL3pdSZ2JD6GVuhwycUVd3Y35D0lWskpsOPFJ19NyKq0p66NXnpKY5d3uQw==",
+      "POSTGRES_URL": "postgres://postgres.kpqwrcjtubmuxcegltty:bcksJp5cPSu6x2Yc@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require&supa=base-pooler.x",
+      "POSTGRES_PRISMA_URL": "postgres://postgres.kpqwrcjtubmuxcegltty:bcksJp5cPSu6x2Yc@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require&supa=base-pooler.x",
+      "POSTGRES_URL_NON_POOLING": "postgres://postgres.kpqwrcjtubmuxcegltty:bcksJp5cPSu6x2Yc@aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require",
+      "POSTGRES_USER": "postgres",
+      "POSTGRES_PASSWORD": "bcksJp5cPSu6x2Yc",
+      "POSTGRES_HOST": "db.kpqwrcjtubmuxcegltty.supabase.co",
+      "POSTGRES_DATABASE": "postgres",
+      "ADMIN_SECRET_TOKEN": "Appaji@1942",
+      "GEMINI_API_KEY": "AIzaSyAJLv6uVq_7rW4alzBbPbBns9kuAghsI4Y",
+      "TELEGRAM_BOT_TOKEN": "7795442330:AAGooq73uC2rps5DJgpdaVX-47wKGfNSMWU",
+      "TELEGRAM_AUTHORIZED_CHAT_ID": "857007796"
+    }
+  },
+  "version": 2,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs"
+}

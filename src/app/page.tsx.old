@@ -1,0 +1,310 @@
+"use client";
+
+import { useSwamijiLocation } from '@/hooks/useSwamijiLocation';
+import { format } from 'date-fns';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { User, Compass, ChevronDown, ChevronUp, LucideArrowUpRightSquare, AlertCircle, BookOpen, MessageSquare } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { useEffect, useState, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert"; // Renamed AlertDescription
+import { Dialog, DialogContent, DialogHeader, DialogTitle as DialogTitleComponent, DialogDescription as DialogDescriptionComponent, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { calculateBearing } from '@/lib/utils';
+import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
+
+// Dynamically import client components that use browser APIs or Leaflet
+const PersonalizedGreeting = dynamic(() => import('@/components/greeting/PersonalizedGreeting'), { ssr: false });
+
+export default function HomePage() {
+  const { locationData, loading: swamijiLocationLoading, error: swamijiLocationError } = useSwamijiLocation();
+  const [isClient, setIsClient] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const [userGeoLocation, setUserGeoLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [userGeoLocationError, setUserGeoLocationError] = useState<string | null>(null);
+  const [isFetchingUserLocation, setIsFetchingUserLocation] = useState(false);
+  const [bearingToSwamiji, setBearingToSwamiji] = useState<number | null>(null);
+  const [accordionValue, setAccordionValue] = useState<string | undefined>(undefined);
+  const [showDiscourseDialog, setShowDiscourseDialog] = useState(false);
+
+  const { toast } = useToast();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    let audioPlayer: HTMLAudioElement | null = null;
+    if (isClient) {
+      if (!audioRef.current) {
+        audioPlayer = new Audio('/audio/background-music.mp3');
+        audioPlayer.loop = true;
+        audioPlayer.volume = 0.3; // Medium-low volume
+        audioPlayer.play().catch(playError => {
+          console.warn("Background audio autoplay prevented:", playError);
+        });
+        audioRef.current = audioPlayer;
+      } else if (audioRef.current.paused) {
+        audioRef.current.play().catch(playError => {
+           console.warn("Resuming background audio prevented:", playError);
+        });
+      }
+    }
+    
+    return () => {
+      if (audioRef.current && audioRef.current === audioPlayer) { 
+        audioPlayer?.pause();
+      }
+    };
+  }, [isClient]);
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = ''; 
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  const fetchUserLocation = () => {
+    if (!navigator.geolocation) {
+      setUserGeoLocationError("Geolocation is not supported by your browser.");
+      toast({ title: "Geolocation Error", description: "Geolocation is not supported by your browser.", variant: "destructive"});
+      return;
+    }
+    setIsFetchingUserLocation(true);
+    setUserGeoLocationError(null); 
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserGeoLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        setIsFetchingUserLocation(false);
+        toast({ title: "Location Acquired", description: "Your current location has been updated."});
+      },
+      (error) => {
+        setUserGeoLocationError(`Error getting location: ${error.message}. Please ensure location services are enabled and permissions are granted.`);
+        toast({ title: "Location Error", description: `Could not get your location: ${error.message}`, variant: "destructive"});
+        setIsFetchingUserLocation(false);
+      },
+      { timeout: 10000, enableHighAccuracy: true }
+    );
+  };
+
+  useEffect(() => {
+    if (userGeoLocation && locationData) {
+      const bearing = calculateBearing(
+        userGeoLocation.latitude,
+        userGeoLocation.longitude,
+        locationData.latitude,
+        locationData.longitude
+      );
+      setBearingToSwamiji(bearing);
+    } else {
+      setBearingToSwamiji(null);
+    }
+  }, [userGeoLocation, locationData]);
+
+  const handleAccordionChange = (value: string) => {
+    const newAccordionValue = value; 
+    setAccordionValue(newAccordionValue);
+    if (newAccordionValue === "dashboard-item" && !userGeoLocation && !isFetchingUserLocation) {
+        fetchUserLocation();
+    }
+  };
+
+  if (!isClient) {
+    return (
+      <div className="fixed inset-0 bg-background z-[200] flex items-center justify-center">
+        <p className="text-foreground">Initializing GuruDarshini...</p>
+      </div>
+    );
+  }
+
+  const locationNameForGreeting = locationData?.address || (locationData ? `${locationData.latitude.toFixed(4)}, ${locationData.longitude.toFixed(4)}` : "an unknown location");
+
+  const discourseText = [
+    "It is said that we should bow down in reverence toward the direction where holy places like Kashi, Gaya, or Mysore are located. Similarly, wherever our Sadguru travels or stays, we should prostrate ourselves in that direction, with the deep feeling that our Sadguru is always with us at all times. We must have the unwavering faith that our Guru is none other than Lord Srinath Himself.",
+    "Sri Balaswamiji fondly remembered the service rendered by Gangadhar, the renowned artist who created the cover page of the Bhajana Yogam book, as well as the devoted service of the late Chandrashekaraiah, who used to accompany Swamiji on His tours.",
+    "Gurugita discourse by Sri Datta Vijayananda Teertha Swamiji during his first Chaturmasya Vrata – 2004."
+  ];
+
+  return (
+    <div className="relative w-full min-h-screen">
+      <div className="space-y-8 py-8">
+        <PersonalizedGreeting locationName={locationNameForGreeting} />
+
+        <h1 className="text-4xl font-bold text-center text-primary">Welcome to GuruDarshini</h1>
+        <p className="text-lg text-center text-muted-foreground mb-12">
+          Your companion for spiritual connection and guidance.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <Card className="shadow-xl bg-card/90 backdrop-blur-sm hover:shadow-primary/30 transition-shadow duration-300 flex flex-col">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center text-xl text-foreground"> 
+                <User className="mr-3 h-6 w-6 text-accent" /> 
+                Dashboard
+              </CardTitle>
+              <CardDescription className="text-sm text-muted-foreground pt-1">View your location relative to Appaji.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-grow">            <Accordion type="single" collapsible className="w-full" onValueChange={(value) => setAccordionValue(value)} value={accordionValue}>
+                <AccordionItem value="dashboard-item">
+                  <AccordionTrigger className="text-lg hover:no-underline focus:no-underline text-foreground/90">
+                    <span className="flex items-center">
+                      {accordionValue === "dashboard-item" ? <ChevronUp className="mr-2 h-5 w-5 text-accent"/> : <ChevronDown className="mr-2 h-5 w-5 text-accent" />}
+                      Show Details
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-4 space-y-4 text-sm">
+                    {userGeoLocationError && (
+                      <Alert variant="destructive">
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertTitle>Location Access Issue</AlertTitle>
+                          <AlertDesc>{userGeoLocationError}</AlertDesc>
+                      </Alert>
+                    )}
+                    
+                    <div>
+                      <h4 className="font-semibold text-accent mb-1">Your Location:</h4>
+                      {isFetchingUserLocation ? (
+                        <p className="flex items-center text-muted-foreground"><Skeleton className="h-4 w-4 mr-2 rounded-full bg-muted/50" />Fetching your location...</p>
+                      ) : userGeoLocation ? (
+                        <p className="text-foreground/90">{`Lat: ${userGeoLocation.latitude.toFixed(4)}, Lng: ${userGeoLocation.longitude.toFixed(4)}`}</p>
+                      ) : (
+                        <p className="text-muted-foreground">
+                          {userGeoLocationError ? 'Could not determine your location.' : 'Your location is not yet available.'}
+                        </p>
+                      )}
+                      {!userGeoLocation && !isFetchingUserLocation && (
+                        <Button onClick={fetchUserLocation} variant="link" size="sm" className="p-0 h-auto text-accent hover:text-accent/80 mt-1">
+                          {userGeoLocationError ? 'Retry Location' : 'Get Your Location'}
+                        </Button>
+                      )}
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-accent mb-1">Appaji's Location:</h4>
+                      {swamijiLocationLoading && <Skeleton className="h-5 w-3/4 mb-1 bg-muted/50" />}
+                      {swamijiLocationError && <p className="text-destructive">Error loading Appaji's location.</p>}
+                      {locationData && (
+                        <>
+                          <p className="text-foreground/90">{locationData.address || `Lat: ${locationData.latitude.toFixed(4)}, Lng: ${locationData.longitude.toFixed(4)}`}</p>
+                          <p className="text-xs text-muted-foreground">Last updated: {format(locationData.updatedAt, 'Pp')}</p>
+                        </>
+                      )}
+                      {!locationData && !swamijiLocationLoading && !swamijiLocationError && <p className="text-muted-foreground">Appaji's location not available.</p>}
+                    </div>
+                    
+                    {userGeoLocation && locationData && bearingToSwamiji !== null && (
+                      <div>
+                        <h4 className="font-semibold text-accent mb-1">Direction to Appaji:</h4>
+                        <p className="flex items-center text-foreground/90">
+                          <Compass className="mr-2 h-4 w-4 text-accent" /> 
+                          Face towards <span className="font-bold text-accent mx-1">{bearingToSwamiji.toFixed(1)}°</span> from your current direction.
+                        </p>
+                      </div>
+                    )}
+                    {accordionValue === "dashboard-item" && !userGeoLocation && !isFetchingUserLocation && !locationData && !swamijiLocationLoading && !userGeoLocationError && !swamijiLocationError && (
+                       <p className="text-muted-foreground">Expand details to attempt to load location information.</p>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </CardContent>
+          </Card>
+
+          <Link href="/darshanam" passHref legacyBehavior>
+            <a className="block">
+              <Card className="shadow-xl bg-card/90 backdrop-blur-sm hover:shadow-primary/30 transition-shadow duration-300 h-full flex flex-col overflow-hidden">
+                <CardContent className="flex-grow p-0 relative min-h-[200px] md:min-h-[250px]">              <Image
+                    src="/images/appaji-sitting-smile.png"
+                    alt="Appaji Darshanam"
+                    layout="fill"
+                    objectFit="contain" 
+                    className="p-2" 
+                    priority
+                    data-ai-hint="spiritual leader guru"
+                  />
+                </CardContent>
+                 <CardFooter> 
+                  <Button variant="default" className="w-full"> 
+                    Sadguru Darshanam <LucideArrowUpRightSquare size={18} className="ml-2"/>
+                  </Button>
+                </CardFooter>
+              </Card>
+            </a>
+          </Link>
+
+          <Card className="shadow-xl bg-card/90 backdrop-blur-sm hover:shadow-primary/30 transition-shadow duration-300 h-full flex flex-col overflow-hidden">
+            <CardContent className="flex-grow p-4 relative min-h-[200px] md:min-h-[250px] flex flex-col items-center justify-center">
+              <div className="relative w-full h-full rounded-md overflow-hidden"> {/* Changed to h-full */}              <Image
+                  src="/images/balaswamiji.png"
+                  alt="Sri Balaswamiji"
+                  layout="fill"
+                  objectFit="contain"
+                  className=""
+                  data-ai-hint="spiritual leader Balaswamiji"
+                />
+              </div>
+              {/* Caption removed from here */}
+            </CardContent>
+            <CardFooter className="p-4 pt-2">
+              <Button variant="default" className="w-full" onClick={() => setShowDiscourseDialog(true)}>
+                Sri Balaswamiji's Discourse <MessageSquare size={18} className="ml-2" />
+              </Button>
+            </CardFooter>
+          </Card>
+
+        </div>
+
+        <Dialog open={showDiscourseDialog} onOpenChange={setShowDiscourseDialog}>
+          <DialogContent className="sm:max-w-lg md:max-w-xl lg:max-w-2xl bg-card/90 backdrop-blur-md border-primary/50 shadow-xl text-foreground max-h-[80vh] flex flex-col">
+            <DialogHeader>
+              <DialogTitleComponent className="text-2xl font-semibold text-primary mb-4 text-center flex items-center justify-center gap-2">
+                <BookOpen className="h-7 w-7" /> A Message of Wisdom
+              </DialogTitleComponent>
+            </DialogHeader>
+            <div className="relative flex-grow overflow-hidden">
+              <div className="absolute inset-0 z-0">
+                 <Image
+                  src="/images/padapooja.png"
+                  alt="Padapooja Watermark"
+                  layout="fill"
+                  objectFit="contain"
+                  className="opacity-10 pointer-events-none"
+                  data-ai-hint="spiritual symbol padapooja"
+                />
+              </div>
+              <ScrollArea className="relative z-10 h-full pr-2">
+                <div className="space-y-4 p-1 text-foreground/90">
+                  {discourseText.map((paragraph, index) => (
+                    <p key={index} className="text-base leading-relaxed text-justify">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+            <DialogFooter className="mt-6">
+              <DialogClose asChild>
+                <Button type="button" variant="outline" className="w-full">
+                  Close
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+      </div>
+    </div>
+  );
+}

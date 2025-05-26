@@ -1,0 +1,37 @@
+/* DarshanamPage.module.css */
+
+.glowBorder {
+  position: relative;
+  border-radius: 1rem;
+  border: 3px solid transparent;
+  z-index: 0;
+}
+
+.glowBorder::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff);
+  filter: blur(10px);
+  animation: borderGlow 5s linear infinite;
+}
+
+@keyframes borderGlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.shadowGlow {
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+  transition: box-shadow 0.3s ease;
+}
+
+.shadowGlowHover:hover {
+  box-shadow:
+    0 0 30px rgba(255, 0, 255, 0.8),
+    0 0 60px rgba(255, 255, 0, 0.6),
+    0 0 90px rgba(0, 255, 255, 0.8);
+}
+
