@@ -1,22 +1,109 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import styles from './SwamijiDirectionAR.module.css';
+import { Box, Typography, IconButton } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Example icon
+// import styles from './SwamijiDirectionAR.module.css'; // Will remove usage of this module CSS
 
 interface SwamijiDirectionARProps {
-  targetDirection?: number; // 0-360 degrees, 0 for North
-  directionTolerance?: number; // e.g., 15 degrees on either side
+  targetDirection?: number; 
+  directionTolerance?: number; 
   imageUrl?: string;
   videoUrl?: string;
-  rotatingIcon?: React.ReactNode;
+  // rotatingIcon?: React.ReactNode; // Will be replaced by new compass
+  onClose?: () => void; // Optional: for a back button if needed within this component
 }
 
+// Styled components based on your CSS example
+const CompassContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '100%',
+  height: '100%', // Occupy full space given by parent
+  padding: '20px',
+  backgroundColor: 'hsl(var(--background))', // Matches app background
+  color: 'hsl(var(--foreground))',
+  textAlign: 'center',
+}));
+
+const CompassOuterRing = styled(Box)(({ theme }) => ({
+  width: '280px',
+  height: '280px',
+  border: `3px solid hsl(var(--primary))`, // Use theme primary color (yellow/gold)
+  borderRadius: '50%',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  position: 'relative',
+  // transition: 'transform 0.5s ease-out', // For rotating the entire dial if preferred
+}));
+
+const CompassInnerRing = styled(Box)(({ theme }) => ({
+  width: '200px',
+  height: '200px',
+  backgroundColor: 'hsla(var(--primary), 0.8)', // Semi-transparent primary color for the center
+  borderRadius: '50%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  position: 'relative',
+  boxShadow: 'inset 0 0 15px rgba(0, 0, 0, 0.3)',
+  color: 'hsl(var(--primary-foreground))', // Text color for on primary background
+}));
+
+const CompassNeedle = styled(Box)<{ rotation?: number }>(({ theme, rotation }) => ({
+  position: 'absolute',
+  top: '-25px', // Adjust to point from the center of the inner ring outwards, or from edge of outer ring
+  left: '50%',
+  width: 0,
+  height: 0,
+  borderLeft: '10px solid transparent',
+  borderRight: '10px solid transparent',
+  borderBottom: `30px solid hsl(var(--foreground))`, // Needle color - white/foreground
+  transformOrigin: '50% 100%', // Rotate around the bottom center of the needle
+  transform: `translateX(-50%) translateY(-100%) rotate(${rotation || 0}deg)`,
+  transition: 'transform 0.5s ease-out',
+  zIndex: 2,
+}));
+
+const CompassCenterData = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  zIndex: 1,
+});
+
+const HeadingDegree = styled(Typography)({
+  fontSize: '50px',
+  fontWeight: 'bold',
+  lineHeight: 1,
+});
+
+const CardinalPoints = styled(Box)({
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  borderRadius: '50%',
+  fontSize: '18px',
+  fontWeight: 'bold',
+  color: 'hsl(var(--foreground))', // Cardinal points color
+  '& .north': { position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)' },
+  '& .east': { position: 'absolute', top: '50%', right: '10px', transform: 'translateY(-50%)' },
+  '& .south': { position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)' },
+  '& .west': { position: 'absolute', top: '50%', left: '10px', transform: 'translateY(-50%)' },
+});
+
+
 const SwamijiDirectionAR: React.FC<SwamijiDirectionARProps> = ({
-  targetDirection = 0, // Default to North
-  directionTolerance = 15,
+  targetDirection = 0,
+  directionTolerance = 20,
   imageUrl = '/images/swamiji-darshan.png',
   videoUrl = '/videos/darshan-background.mp4',
-  rotatingIcon = <div className={styles.defaultRotatingIcon}>❖</div>,
+  onClose,
 }) => {
   const [currentHeading, setCurrentHeading] = useState<number | null>(null);
   const [isFacingTarget, setIsFacingTarget] = useState(false);
@@ -24,21 +111,16 @@ const SwamijiDirectionAR: React.FC<SwamijiDirectionARProps> = ({
   const [showDarshan, setShowDarshan] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const cameraVideoRef = useRef<HTMLVideoElement>(null); // For camera feed
+  // cameraVideoRef removed as it's not used in the new design focus
 
   const handleDeviceOrientation = useCallback(
     (event: DeviceOrientationEvent) => {
       let heading = null;
-      // event.webkitCompassHeading for iOS Safari
-      // event.alpha for other browsers (magnetic north)
-      // 'absolute' orientation events provide true north if available
       if (event.absolute === true && event.alpha !== null) {
-        heading = event.alpha; // True North
+        heading = event.alpha; 
       } else if (typeof (event as any).webkitCompassHeading === 'number') {
-        heading = (event as any).webkitCompassHeading; // iOS Safari
+        heading = (event as any).webkitCompassHeading;
       } else if (event.alpha !== null) {
-        // This might be magnetic north, you might need to adjust for declination
-        // For simplicity, we'll use it as is.
         heading = event.alpha;
       }
 
@@ -46,26 +128,18 @@ const SwamijiDirectionAR: React.FC<SwamijiDirectionARProps> = ({
         setCurrentHeading(heading);
         const lowerBound = (targetDirection - directionTolerance + 360) % 360;
         const upperBound = (targetDirection + directionTolerance) % 360;
-
-        let facing = false;
-        if (lowerBound < upperBound) {
-          facing = heading >= lowerBound && heading <= upperBound;
-        } else {
-          // Handles cases where the range crosses 0/360 (e.g., target North)
-          facing = heading >= lowerBound || heading <= upperBound;
-        }
-
-        if (facing) {
+        let facing = lowerBound < upperBound ? (heading >= lowerBound && heading <= upperBound) : (heading >= lowerBound || heading <= upperBound);
+        
+        if (facing && !showDarshan) { // Only trigger if not already showing
           setIsFacingTarget(true);
-          // Debounce or delay showing darshan to prevent flickering
-          setTimeout(() => setShowDarshan(true), 500);
-        } else {
+          setTimeout(() => setShowDarshan(true), 1000); // Increased delay slightly
+        } else if (!facing && showDarshan) { // Only trigger if currently showing
           setIsFacingTarget(false);
           setShowDarshan(false);
         }
       }
     },
-    [targetDirection, directionTolerance]
+    [targetDirection, directionTolerance, showDarshan] // Added showDarshan to dependencies
   );
 
   const requestOrientationPermission = async () => {
@@ -86,108 +160,178 @@ const SwamijiDirectionAR: React.FC<SwamijiDirectionARProps> = ({
         setPermissionGranted(false);
       }
     } else {
-      // For browsers that don't require explicit permission (e.g., Android Chrome)
       setPermissionGranted(true);
       window.addEventListener('deviceorientationabsolute', handleDeviceOrientation, true);
       window.addEventListener('deviceorientation', handleDeviceOrientation, true);
     }
   };
 
-  // Optional: Request Camera Permission for AR background
-  const requestCameraPermission = async () => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        if (cameraVideoRef.current) {
-          cameraVideoRef.current.srcObject = stream;
-        }
-        // You would then use this stream as a background in a WebGL/WebXR scene
-      } catch (err) {
-        console.error('Error accessing camera:', err);
-        setError(prev => `${prev ? prev + ' ' : ''}Camera access denied or not available.`);
-      }
-    } else {
-       setError(prev => `${prev ? prev + ' ' : ''}Camera API not available.`);
-    }
-  };
-
   useEffect(() => {
-    // Attempt to request permissions when component mounts or on a user interaction
-    // For a better UX, trigger requestOrientationPermission on a button click.
-    // requestOrientationPermission(); // Auto-request on mount (might be blocked)
-    // requestCameraPermission(); // Optional: for AR background
-
+    // requestOrientationPermission(); // Auto-request can be problematic, prefer button
     return () => {
       window.removeEventListener('deviceorientationabsolute', handleDeviceOrientation, true);
       window.removeEventListener('deviceorientation', handleDeviceOrientation, true);
-      if (cameraVideoRef.current && cameraVideoRef.current.srcObject) {
-        const stream = cameraVideoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach(track => track.stop());
-      }
     };
   }, [handleDeviceOrientation]);
 
   useEffect(() => {
     if (showDarshan && videoRef.current) {
-      videoRef.current.play().catch(playError => {
-        console.error('Error playing background video:', playError);
-        // Autoplay might be blocked, user interaction might be needed
-      });
+      videoRef.current.play().catch(playError => console.error('Error playing background video:', playError));
     } else if (videoRef.current) {
       videoRef.current.pause();
     }
   }, [showDarshan]);
 
-  if (error && !permissionGranted) {
-    return <div className={styles.container}><p>Error: {error}</p></div>;
+  // CSS for this component specifically, as module.css is removed
+  const styles = {
+    container: {
+      width: '100%',
+      height: '100vh', // Full viewport height for darshanam page
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'hsl(var(--background))',
+      color: 'hsl(var(--foreground))',
+      padding: '1rem',
+      textAlign: 'center' as 'center',
+      position: 'relative' as 'relative',
+    },
+    permissionButton: {
+      padding: '10px 20px',
+      fontSize: '16px',
+      color: 'hsl(var(--primary-foreground))',
+      backgroundColor: 'hsl(var(--primary))',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      marginTop: '20px',
+    },
+    errorText: {
+      color: 'hsl(var(--destructive))',
+      marginTop: '10px',
+    },
+    darshanContainer: {
+      position: 'absolute' as 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      overflow: 'hidden',
+    },
+    backgroundVideo: {
+      position: 'absolute' as 'absolute',
+      top: '50%',
+      left: '50%',
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover' as 'cover',
+      transform: 'translate(-50%, -50%)',
+      zIndex: 1,
+    },
+    darshanImage: {
+      position: 'absolute' as 'absolute',
+      top: '50%',
+      left: '50%',
+      width: 'auto',
+      height: '90%', // Adjust as needed
+      maxWidth: '90%',
+      objectFit: 'contain' as 'contain',
+      transform: 'translate(-50%, -50%)',
+      zIndex: 2,
+    },
+    calibrationText: {
+        marginTop: '20px',
+        fontSize: '16px',
+        color: 'hsl(var(--muted-foreground))',
+    },
+    // Back button styling (optional, if you add a back button inside this component)
+    backButton: {
+        position: 'absolute' as 'absolute',
+        top: '20px',
+        left: '20px',
+        color: 'hsl(var(--primary))',
+        zIndex: 10,
+    }
+  };
+
+  if (error && !permissionGranted && !currentHeading) { // Show error primarily if permission fails before first reading
+    return (
+      <Box sx={styles.container}>
+        <Typography variant="h6">Error</Typography>
+        <Typography>{error}</Typography>
+        <button onClick={requestOrientationPermission} style={styles.permissionButton}>
+          Retry Granting Permission
+        </button>
+      </Box>
+    );
   }
 
   if (!permissionGranted) {
     return (
-      <div className={styles.container}>
-        <p>This experience requires access to device orientation sensors.</p>
-        <button onClick={requestOrientationPermission} className={styles.permissionButton}>
+      <Box sx={styles.container}>
+        {onClose && <IconButton onClick={onClose} sx={styles.backButton}><ArrowBackIcon /></IconButton>}
+        <Typography>This experience requires access to device orientation sensors.</Typography>
+        <button onClick={requestOrientationPermission} style={styles.permissionButton}>
           Grant Orientation Permission
         </button>
-        {/* Optional: Button to grant camera permission
-        <button onClick={requestCameraPermission} className={styles.permissionButton}>
-          Grant Camera Permission (for AR)
-        </button>
-        */}
-        {error && <p className={styles.errorText}>{error}</p>}
-      </div>
+        {error && <Typography sx={styles.errorText}>{error}</Typography>}
+      </Box>
+    );
+  }
+  
+  if (showDarshan) {
+    return (
+      <Box sx={styles.darshanContainer}>
+         {onClose && <IconButton onClick={onClose} sx={styles.backButton}><ArrowBackIcon /></IconButton>}
+        <video
+          ref={videoRef}
+          style={styles.backgroundVideo}
+          src={videoUrl}
+          loop
+          muted
+          playsInline
+        />
+        <img
+          src={imageUrl}
+          alt="Swamiji Darshan"
+          style={styles.darshanImage}
+        />
+      </Box>
     );
   }
 
+  // Compass View
   return (
-    <div className={styles.container}>
-      {/* Optional: Camera feed for AR background */}
-      {/* <video ref={cameraVideoRef} className={styles.cameraFeed} autoPlay playsInline muted /> */}
-
-      {showDarshan ? (
-        <div className={styles.darshanContainer}>
-          <video
-            ref={videoRef}
-            className={styles.backgroundVideo}
-            src={videoUrl}
-            loop
-            muted
-            playsInline
-          />
-          <img
-            src={imageUrl}
-            alt="Swamiji Darshan"
-            className={styles.darshanImage}
-          />
-        </div>
-      ) : (
-        <div className={`${styles.iconContainer} ${isFacingTarget ? '' : styles.rotating}`}>
-          {rotatingIcon}
-          {currentHeading !== null && <p className={styles.headingDisplay}>Heading: {currentHeading.toFixed(0)}°</p>}
-          {!isFacingTarget && <p>Align with Swamiji's Direction ({targetDirection}°)</p>}
-        </div>
-      )}
-    </div>
+    <CompassContainer sx={styles.container}> {/* Using sx for the outermost container style override */}
+      {onClose && <IconButton onClick={onClose} sx={styles.backButton}><ArrowBackIcon /></IconButton>}
+      <CompassOuterRing>
+        <CompassNeedle rotation={currentHeading !== null ? 360 - currentHeading : 0} />
+        {/* To rotate the entire dial instead of just the needle: 
+           style={{ transform: `rotate(${currentHeading !== null ? -currentHeading : 0}deg)` }} */}
+        <CardinalPoints>
+          <span className="north">N</span>
+          <span className="east">E</span>
+          <span className="south">S</span>
+          <span className="west">W</span>
+        </CardinalPoints>
+        <CompassInnerRing>
+          <CompassCenterData>
+            {currentHeading !== null ? (
+              <HeadingDegree>{currentHeading.toFixed(0)}°</HeadingDegree>
+            ) : (
+              <Typography variant="h4">--°</Typography> // Placeholder while loading
+            )}
+            {/* Magnetic field and signal bars from your example can be added here if data is available */}
+          </CompassCenterData>
+        </CompassInnerRing>
+      </CompassOuterRing>
+      <Typography sx={styles.calibrationText}>
+        {currentHeading === null ? "Calibrating compass..." : "Align with Swamiji's Direction"}
+        <br />
+        Move device in a figure-eight motion if needed.
+      </Typography>
+    </CompassContainer>
   );
 };
 

@@ -13,8 +13,8 @@
     --popover: 240 60% 4%; /* Even Darker Blue for popovers */
     --popover-foreground: 240 20% 95%;
     
-    --primary: 180 100% 85%; /* Bright Silver/Cyan */
-    --primary-foreground: 240 60% 5%; /* Dark Blue (for text on primary buttons) */
+    --primary: 45 100% 60%; /* NEW Bright Gold/Yellow - Adjusted lightness for better visibility */
+    --primary-foreground: 240 60% 10%; /* Dark Blue (for text on primary buttons), adjusted for contrast */
     
     --secondary: 270 80% 70%; /* Cosmic Purple */
     --secondary-foreground: 240 20% 95%; /* Light Cool White/Blue */
@@ -28,13 +28,14 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 240 50% 20%; /* Subtle Lighter Dark Blue for borders */
-    --input: 240 50% 20%;
-    --ring: 180 100% 70%; /* Bright Silver/Cyan for focus rings */
+    --border: 240 50% 25%; /* Slightly lighter border for better visibility on dark cards */
+    --input: 240 50% 25%;
+    --ring: 45 100% 60%; /* Gold/Yellow for focus rings to match primary */
     
     --radius: 0.75rem;
 
-    /* Sidebar specific theme adjustments - review if this theme is kept */
+    /* Sidebar specific theme adjustments - can be removed if not using a distinct sidebar theme */
+    /* 
     --sidebar-background: 230 30% 8%; 
     --sidebar-foreground: 220 25% 80%;
     --sidebar-primary: 190 90% 60%; 
@@ -43,6 +44,7 @@
     --sidebar-accent-foreground: 230 30% 10%;
     --sidebar-border: 230 30% 15%;
     --sidebar-ring: 190 80% 65%;
+    */
   }
 
   .dark {
@@ -53,8 +55,8 @@
     --card-foreground: 240 20% 95%;
     --popover: 240 60% 4%;
     --popover-foreground: 240 20% 95%;
-    --primary: 180 100% 85%;
-    --primary-foreground: 240 60% 5%;
+    --primary: 45 100% 60%; /* NEW Bright Gold/Yellow */
+    --primary-foreground: 240 60% 10%; /* Dark Blue */
     --secondary: 270 80% 70%;
     --secondary-foreground: 240 20% 95%;
     --muted: 240 40% 20%;
@@ -63,9 +65,9 @@
     --accent-foreground: 240 60% 5%;
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 50% 20%;
-    --input: 240 50% 20%;
-    --ring: 180 100% 70%;
+    --border: 240 50% 25%;
+    --input: 240 50% 25%;
+    --ring: 45 100% 60%;
   }
 }
 
@@ -75,10 +77,13 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-geist-sans), sans-serif;
+    font-family: var(--font-merriweather), serif;
+    @apply transition-colors duration-300 ease-in-out;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply text-foreground;
+    font-family: var(--font-cinzel), serif;
+    @apply font-semibold;
   }
   a {
     @apply text-primary hover:text-[hsl(var(--primary)/0.8)] transition-colors;
@@ -114,6 +119,26 @@
     background-size: 350px 350px, 500px 500px;
     animation-duration: 200s;
     animation-delay: -60s;
+  }
+
+  /* General Animation Utilities */
+  .smooth-transform {
+    @apply transition-transform duration-300 ease-in-out;
+  }
+  .smooth-shadow {
+    @apply transition-shadow duration-300 ease-in-out;
+  }
+  .smooth-opacity {
+    @apply transition-opacity duration-300 ease-in-out;
+  }
+  .smooth-all {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  .hover-lift {
+    @apply hover:-translate-y-1 hover:shadow-xl smooth-transform smooth-shadow;
+  }
+  .card-hover-effect {
+    @apply hover:shadow-primary/40 hover:border-primary/50 smooth-shadow border border-transparent;
   }
 }
 

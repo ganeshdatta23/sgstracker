@@ -1,9 +1,25 @@
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
+import { Merriweather, Cinzel } from 'next/font/google';
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
 import AppShell from '@/components/layout/AppShell';
+
+// Initialize new fonts
+const merriweather = Merriweather({
+  subsets: ['latin'],
+  weight: ['300', '400', '700', '900'],
+  variable: '--font-merriweather',
+  display: 'swap',
+});
+
+const cinzel = Cinzel({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800', '900'],
+  variable: '--font-cinzel',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'GuruDarshini',
@@ -20,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning={true}>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${merriweather.variable} ${cinzel.variable}`} suppressHydrationWarning={true}>
       <head>
         <link rel="icon" href="/images/favicon.png" type="image/png" />
       </head>

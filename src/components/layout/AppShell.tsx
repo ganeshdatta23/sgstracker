@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import AppHeader from './AppHeader';
+// import AppHeader from './AppHeader'; // AppHeader will be removed
 import { ThemeProvider } from '@/components/theme-provider';
 import { usePathname } from 'next/navigation';
 
@@ -16,7 +16,7 @@ export default function AppShell({ children }: AppShellProps) {
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="dark" // Set default theme to dark
       enableSystem
       disableTransitionOnChange
     >
@@ -30,24 +30,26 @@ export default function AppShell({ children }: AppShellProps) {
           </div>
         )}
 
-        {/* Conditionally render AppHeader */}
-        {!isDarshanamPage && <AppHeader />}
+        {/* AppHeader REMOVED */}
+        {/* {!isDarshanamPage && <AppHeader />} */}
 
         {/* Main content */}
         <main 
-          className={`flex-grow relative ${isDarshanamPage ? 'z-0' : 'z-10 container mx-auto px-4 py-8'}`}
+          className={`flex-grow relative ${isDarshanamPage ? 'z-0' : 'z-10'}`}
         >
-          <div className={`w-full ${isDarshanamPage ? 'h-full' : 'glass-card text-foreground'}`}>
+          <div className={`w-full ${isDarshanamPage ? 'h-full' : ''}`}>
             {children}
           </div>
         </main>
 
-        {/* Conditionally render Footer */}
+        {/* Footer REMOVED */}
+        {/* 
         {!isDarshanamPage && (
           <footer className="bg-black/60 text-center py-4 text-sm text-foreground border-t border-border relative z-10">
             <p>&copy; {new Date().getFullYear()} GuruDarshini. All rights reserved.<br />An ADPT Unofficial App</p>
           </footer>
         )}
+        */}
       </div>
     </ThemeProvider>
   );
