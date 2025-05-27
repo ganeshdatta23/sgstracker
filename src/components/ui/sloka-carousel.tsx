@@ -25,10 +25,10 @@ const slokas = [
     language: 'English'
   }
 ];
-const [line1, line2] = slokas[currentIndex].text.split('\n');
 
 export function SlokaCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [line1, line2] = slokas[currentIndex].text.split('\n');
 
   useEffect(() => {
     const timer = setInterval(() => {
