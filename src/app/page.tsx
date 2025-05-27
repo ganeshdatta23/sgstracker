@@ -403,31 +403,30 @@ export default function HomePage() {
                 <Typography variant="h6" component="h2" align="center" sx={{ color: 'primary.main', mb: 2, fontWeight: 'bold' }}>
                   Jaya Guru Datta
                 </Typography>
-                
-<Typography variant="body1" paragraph sx={{ mb: 1.5 }}>
-                  GuruDarshini is a humble tool designed for Datta devotees to offer daily pranāms (obeisance) toPujya Sri Appaji, as instructed in the Guru Gītā in the direction ofPujya Appaji's current location.
+                <Typography variant="body1" paragraph sx={{ mb: 1.5, color: 'white' }}>
+                  GuruDarshini is a humble tool designed for Datta devotees to offer daily pranāms (obeisance) to Pujya Sri Appaji, as instructed in the Guru Gītā in the direction of Pujya Appaji's current location.
                 </Typography>
                 <Box sx={{ borderLeft: 4, borderColor: 'primary.light', pl: 2, my: 2, fontStyle: 'italic', bgcolor: 'action.hover' }}>
-                  <Typography variant="body2" component="blockquote" sx={{ color: 'text.secondary' }}>
-                    śrīnātha caraṇa dvandvaṁ yasyāṁ diśi virājatē ।<br />
+                  <Typography variant="body2" component="blockquote" sx={{ color: 'gold' }}>
+                    śrīnātha caraṇa dvandvaṁ yasyāṁ diśi virājatē。<br />
                     tasyai diśē namaskuryāt bhaktyā pratidinaṁ priyē ||
                   </Typography>
                 </Box>
-                <Typography variant="body1" paragraph sx={{ mb: 1.5 }}>
-"O beloved, one should bow every day with devotion in the direction where the feet of the revered Guru, Srīnātha, shine forth."
-Swamiji explains that we should offer our obeisance primarily at the feet of the Guru, and the direction in which the Guru's feet reside becomes sacred.
-                </Typography>  
-                <Typography variant="body1" paragraph sx={{ mb: 1.5 }}>
-Swamiji explains that we should offer our obeisance primarily at the feet of the Guru, and the direction in which the Guru's feet reside becomes sacred.
-"Guru stands for Srīnātha – the Lord Himself. The Guru is the embodiment of Vishnu, the bestower of auspiciousness, wealth, and divine energy. His lotus feet sanctify all directions."                </Typography>  
-                <Typography variant="body1" paragraph sx={{ mb: 1.5 }}>
-                 Therefore, wherever the Guru's presence is felt, that direction becomes worthy of worship.                </Typography>
-                <Typography variant="subtitle1" component="h3" sx={{ mt: 2, mb: 1, fontWeight: 'medium' }}>
-Note
-This tool is lovingly developed and maintained by a team of Datta devotees as a humble offering toPujya Sri Appaji, with the blessings of Pujya Sri Datta Prabhu Appaji and under the guidance of Pujya Bala Swamiji.
+                <Typography variant="body1" paragraph sx={{ mb: 1.5, color: 'white' }}>
+                  "O beloved, one should bow every day with devotion in the direction where the feet of the revered Guru, Srīnātha, shine forth." Swamiji explains that we should offer our obeisance primarily at the feet of the Guru, and the direction in which the Guru's feet reside becomes sacred.
+                </Typography>
+                <Typography variant="body1" paragraph sx={{ mb: 1.5, color: 'white' }}>
+                  Swamiji explains that we should offer our obeisance primarily at the feet of the Guru, and the direction in which the Guru's feet reside becomes sacred. "Guru stands for Srīnātha – the Lord Himself. The Guru is the embodiment of Vishnu, the bestower of auspiciousness, wealth, and divine energy. His lotus feet sanctify all directions."
+                </Typography>
+                <Typography variant="body1" paragraph sx={{ mb: 1.5, color: 'white' }}>
+                  Therefore, wherever the Guru's presence is felt, that direction becomes worthy of worship.
+                </Typography>
+                <Typography variant="subtitle1" component="h3" sx={{ mt: 2, mb: 1, fontWeight: 'medium', color: 'white' }}>
+                  Note
+                  This tool is lovingly developed and maintained by a team of Datta devotees as a humble offering to Pujya Sri Appaji, with the blessings of Pujya Sri Datta Prabhu Appaji and under the guidance of Pujya Bala Swamiji.
                 </Typography>
                 <hr className="my-3 border-border/30" />
-                <Typography variant="caption" display="block" align="center" sx={{ color: 'text.disabled', mt: 2 }}>
+                <Typography variant="caption" display="block" align="center" sx={{ color: 'yellow', mt: 2 }}>
                   This app is developed by a Datta Devotee and is not officially affiliated with Avadhootha Datta Peetham.
                 </Typography>
               </Box>
@@ -480,7 +479,7 @@ This tool is lovingly developed and maintained by a team of Datta devotees as a 
                     {sloka.text}
                     </Typography>
                     <hr className="my-2 border-border/30" />
-                    <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                    <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'silver' }}>
                     {sloka.translation}
                     </Typography>
                   </Box>
@@ -590,7 +589,7 @@ This tool is lovingly developed and maintained by a team of Datta devotees as a 
             <DialogDescriptionComponent className="text-muted-foreground">How to use GuruDarshini & Words of Wisdom.</DialogDescriptionComponent>
           </DialogHeader>
           <ScrollArea className="flex-grow relative z-10 h-full pr-2">
-              <Box sx={{ p: { xs: 1.5, sm: 2.5 }, color: 'text.primary' }}>
+              <Box sx={{ p: { xs: 1.5, sm: 2.5 }, color: 'red' }}>
                 <Typography variant="h5" component="h3" sx={{ color: 'primary.light', mt: 1, mb: 1.5, fontWeight: 'medium' }}>
                   User Guide:
                 </Typography>
@@ -621,7 +620,7 @@ This tool is lovingly developed and maintained by a team of Datta devotees as a 
                       pl: 2, 
                       my: 2, 
                       fontStyle: 'italic', 
-                      color: 'text.secondary', 
+                      color: 'white', 
                       bgcolor: 'action.hover', 
                       py: 0.5, 
                       borderRadius: 1 

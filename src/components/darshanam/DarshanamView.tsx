@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
+import "@/styles/compass.css";
 import { useSwamijiLocation } from "@/hooks/useSwamijiLocation";
 import { calculateBearing } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -26,7 +27,7 @@ import {
 } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
-const ALIGNMENT_THRESHOLD = 15;
+const ALIGNMENT_THRESHOLD = 15; // Increased to 20 degrees on each side
 const FACING_THRESHOLD_DEGREES = ALIGNMENT_THRESHOLD;
 
 interface DeviceOrientationEventiOS extends DeviceOrientationEvent {
@@ -189,24 +190,30 @@ export default function DarshanamView() {
       const angularDifference = Math.min(relativeBearingToSwamiji, 360 - relativeBearingToSwamiji);
 
       if (angularDifference <= FACING_THRESHOLD_DEGREES) {
-        if (!showDarshan) {
-          setShowDarshan(true);
-          if (typeof window !== "undefined" && "vibrate" in navigator) navigator.vibrate(1000);
-          if (vibrationTimeoutRef.current) clearTimeout(vibrationTimeoutRef.current);
-          vibrationTimeoutRef.current = setTimeout(() => {
-            if (typeof window !== "undefined" && "vibrate" in navigator) navigator.vibrate(0);
-          }, 1000);
+        // Show darshan view and play audio when aligned
+        setShowDarshan(true);
+        if (darshanAudioRef.current && !isAudioPlaying) {
+          darshanAudioRef.current.play()
+            .then(() => setIsAudioPlaying(true))
+            .catch(error => console.error("Error playing audio:", error));
+        }
+        // Provide haptic feedback for 1 second
+        if (typeof window !== "undefined" && "vibrate" in navigator) {
+          navigator.vibrate([1000]); // 1 second vibration to indicate alignment
         }
       } else {
-        if (typeof window !== "undefined" && "vibrate" in navigator) navigator.vibrate(0);
-        if (vibrationTimeoutRef.current) clearTimeout(vibrationTimeoutRef.current);
+        // Hide darshan view and stop audio when not aligned
+        setShowDarshan(false);
+        if (darshanAudioRef.current && isAudioPlaying) {
+          darshanAudioRef.current.pause();
+          setIsAudioPlaying(false);
+        }
+        if (typeof window !== "undefined" && "vibrate" in navigator) {
+          navigator.vibrate(0); // Stop vibration
+        }
       }
-    } 
-    return () => {
-      if (vibrationTimeoutRef.current) clearTimeout(vibrationTimeoutRef.current);
-      if (typeof window !== "undefined" && "vibrate" in navigator) navigator.vibrate(0);
-    };
-  }, [bearingToSwamiji, deviceHeading, showDarshan]);
+    }
+  }, [bearingToSwamiji, deviceHeading, isAudioPlaying]);
 
   useEffect(() => {
     if (showDarshan && darshanAudioRef.current) {
@@ -386,12 +393,26 @@ export default function DarshanamView() {
           <div className="stars-layer2"></div>
           <div className="stars-layer3"></div>
 
-          {/* Compass Visual Over Stars */}
-          <div 
-            className="relative w-full max-w-[200px] sm:max-w-[240px] md:max-w-[280px] aspect-square pointer-events-auto mb-6 z-10" // Increased mb, added z-10
-            aria-label="Compass"
-          >
-            {/* Digital Readout for Device Heading - Moved Above Compass */}
+          {/* New Compass Visual */}
+          <div className="compass">
+            <div className="arrow" />
+            <div
+              className="compass-circle"
+              style={{
+                transform: `translate(-50%, -50%) rotate(${deviceHeading !== null ? -deviceHeading : 0}deg)`
+              }}
+            />
+            <div
+              className="swamiji-point"
+              style={{
+                opacity: bearingToSwamiji !== null && deviceHeading !== null &&
+                  Math.min(
+                    Math.abs(bearingToSwamiji - deviceHeading),
+                    360 - Math.abs(bearingToSwamiji - deviceHeading)
+                  ) <= FACING_THRESHOLD_DEGREES ? 1 : 0
+              }}
+            />
+            {/* Digital Readout for Device Heading */}
             <div className="absolute -top-20 left-1/2 -translate-x-1/2 text-center pointer-events-auto bg-black/60 p-3 rounded-lg backdrop-blur-sm z-20 w-40">
               <p className="text-4xl font-bold tabular-nums text-primary">
                 {deviceHeading !== null ? `${deviceHeading.toFixed(0)}°` : "--°"}
@@ -400,30 +421,6 @@ export default function DarshanamView() {
                 {getCardinalDirection(deviceHeading)}
               </p>
             </div>
-
-            {/* Rotating Compass Rose */}
-            <div
-              className="absolute inset-0 w-full h-full bg-contain bg-no-repeat bg-center transition-transform duration-200 ease-linear"
-              style={{
-                backgroundImage: `url('/images/compass-face-cosmic.svg')`,
-                transform: `rotate(${deviceHeading !== null ? (360-deviceHeading) % 360 : 0}deg)`,
-              }}
-              aria-hidden="true"
-            />
-            {/* Swamiji Direction Arrow (points relative to device top) */}
-            <div 
-              className="absolute inset-0 w-full h-full bg-contain bg-no-repeat bg-center transition-transform duration-200 ease-linear"
-              style={{
-                backgroundImage: `url('/images/compass-arrow-cosmic.svg')`, 
-                transform: `rotate(${bearingToSwamiji !== null && deviceHeading !== null ? (bearingToSwamiji - deviceHeading + 360) % 360 : 0}deg)`,
-              }}
-              aria-hidden="true"
-            />
-            {/* Static Lubber Line / Target Indicator at the top */}
-            <div 
-              className="absolute top-[5%] left-1/2 -translate-x-1/2 w-[3px] h-[10%] bg-red-500 rounded-full z-10 shadow-md"
-              aria-label="Current device orientation target"
-            />
           </div>
 
           {/* Instructions / Status Text - Below Compass */}

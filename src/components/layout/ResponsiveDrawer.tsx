@@ -56,46 +56,46 @@ export default function ResponsiveDrawer({
       <List>
         <ListItem disablePadding>
           <Link href="/" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
-            <ListItemButton onClick={() => { if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, color: 'hsl(var(--primary))', transition: 'background-color 0.2s ease-in-out' }}>
+            <ListItemButton onClick={() => { if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
               <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><HomeIcon /></ListItemIcon>
-              <ListItemText primary="Home" sx={{ color: 'hsl(var(--primary))' }}/>
+              <ListItemText primary="Home" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }}/>
             </ListItemButton>
           </Link>
         </ListItem>
         <ListItem disablePadding>
           <Link href="/admin" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
-            <ListItemButton onClick={() => { if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, color: 'hsl(var(--primary))', transition: 'background-color 0.2s ease-in-out' }}>
+            <ListItemButton onClick={() => { if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
               <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><AdminPanelSettingsIcon /></ListItemIcon>
-              <ListItemText primary="Admin" sx={{ color: 'hsl(var(--primary))' }} />
+              <ListItemText primary="Admin" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }} />
             </ListItemButton>
           </Link>
         </ListItem>
         <Divider sx={{ borderColor: 'hsla(var(--primary), 0.2)', my:1 }} />
         <ListItem disablePadding>
-          <ListItemButton onClick={() => { onDashboardClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, color: 'hsl(var(--foreground))', transition: 'background-color 0.2s ease-in-out' }}>
+          <ListItemButton onClick={() => { onDashboardClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
             <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><Compass /></ListItemIcon>
-            <ListItemText primary="Guru Connect" sx={{ color: 'hsl(var(--foreground))' }} />
+            <ListItemText primary="Guru Connect" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }} />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => { onSlokasClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, color: 'hsl(var(--foreground))', transition: 'background-color 0.2s ease-in-out' }}>
+          <ListItemButton onClick={() => { onSlokasClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
             <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><BookOpen /></ListItemIcon>
-            <ListItemText primary="Sacred Slokas" sx={{ color: 'hsl(var(--foreground))' }} />
+            <ListItemText primary="Sacred Slokas" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }} />
           </ListItemButton>
         </ListItem>
       </List>
       <Divider sx={{ borderColor: 'hsla(var(--primary), 0.2)' }} />
       <List>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => { onGuideClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, color: 'hsl(var(--foreground))', transition: 'background-color 0.2s ease-in-out' }}>
+          <ListItemButton onClick={() => { onGuideClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
             <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><HelpCircle /></ListItemIcon>
-            <ListItemText primary="User Guide" sx={{ color: 'hsl(var(--foreground))' }}/>
+            <ListItemText primary="User Guide" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }}/>
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => { onDisclaimerClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, color: 'hsl(var(--foreground))', transition: 'background-color 0.2s ease-in-out' }}>
+          <ListItemButton onClick={() => { onDisclaimerClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
             <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><Info /></ListItemIcon>
-            <ListItemText primary="About" sx={{ color: 'hsl(var(--foreground))' }} />
+            <ListItemText primary="About" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }} />
           </ListItemButton>
         </ListItem>
       </List>

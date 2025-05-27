@@ -104,33 +104,30 @@ export default function PermanentDrawerLeft({
                 px: 2.5,
                 '&:hover': { bgcolor: 'rgba(255, 215, 0, 0.1)' } 
               }}
-            >
-              <ListItemIcon sx={{ minWidth: 0, mr: isDrawerOpen ? 3 : 'auto', justifyContent: 'center', color: '#FFD700' }}>
+            >              <ListItemIcon sx={{ minWidth: 0, mr: isDrawerOpen ? 3 : 'auto', justifyContent: 'center', color: 'hsl(var(--primary))' }}>
                 <Compass />
               </ListItemIcon>
-              <ListItemText primary="Guru Connect" sx={{ opacity: isDrawerOpen ? 1 : 0 }} />
+              <ListItemText primary="Guru Connect" sx={{ opacity: isDrawerOpen ? 1 : 0, color: 'hsl(var(--foreground))', fontWeight: 500 }} />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton 
               onClick={onSlokasClick} 
               sx={{ minHeight: 48, justifyContent: isDrawerOpen ? 'initial' : 'center', px: 2.5, '&:hover': { bgcolor: 'rgba(255, 215, 0, 0.1)' } }}
-            >
-              <ListItemIcon sx={{ minWidth: 0, mr: isDrawerOpen ? 3 : 'auto', justifyContent: 'center', color: '#FFD700' }}>
+            >              <ListItemIcon sx={{ minWidth: 0, mr: isDrawerOpen ? 3 : 'auto', justifyContent: 'center', color: 'hsl(var(--primary))' }}>
                 <BookOpen />
               </ListItemIcon>
-              <ListItemText primary="Sacred Slokas" sx={{ opacity: isDrawerOpen ? 1 : 0 }} />
+              <ListItemText primary="Sacred Slokas" sx={{ opacity: isDrawerOpen ? 1 : 0, color: 'hsl(var(--foreground))', fontWeight: 500 }} />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton 
               onClick={onBlessingsClick} 
               sx={{ minHeight: 48, justifyContent: isDrawerOpen ? 'initial' : 'center', px: 2.5, '&:hover': { bgcolor: 'rgba(255, 215, 0, 0.1)' } }}
-            >
-              <ListItemIcon sx={{ minWidth: 0, mr: isDrawerOpen ? 3 : 'auto', justifyContent: 'center', color: '#FFD700' }}>
+            >              <ListItemIcon sx={{ minWidth: 0, mr: isDrawerOpen ? 3 : 'auto', justifyContent: 'center', color: 'hsl(var(--primary))' }}>
                 <Users />
               </ListItemIcon>
-              <ListItemText primary="Anugraha Sandesham" sx={{ opacity: isDrawerOpen ? 1 : 0 }} />
+              <ListItemText primary="Anugraha Sandesham" sx={{ opacity: isDrawerOpen ? 1 : 0, color: 'hsl(var(--foreground))', fontWeight: 500 }} />
             </ListItemButton>
           </ListItem>
         </List>
@@ -140,22 +137,20 @@ export default function PermanentDrawerLeft({
             <ListItemButton 
               onClick={onGuideClick} 
               sx={{ minHeight: 48, justifyContent: isDrawerOpen ? 'initial' : 'center', px: 2.5, '&:hover': { bgcolor: 'rgba(255, 215, 0, 0.1)' } }}
-            >
-              <ListItemIcon sx={{ minWidth: 0, mr: isDrawerOpen ? 3 : 'auto', justifyContent: 'center', color: '#FFD700' }}>
+            >              <ListItemIcon sx={{ minWidth: 0, mr: isDrawerOpen ? 3 : 'auto', justifyContent: 'center', color: 'hsl(var(--primary))' }}>
                  <HelpCircle />
               </ListItemIcon>
-              <ListItemText primary="User Guide" sx={{ opacity: isDrawerOpen ? 1 : 0 }} />
+              <ListItemText primary="User Guide" sx={{ opacity: isDrawerOpen ? 1 : 0, color: 'hsl(var(--foreground))', fontWeight: 500 }} />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton 
               onClick={onDisclaimerClick} 
               sx={{ minHeight: 48, justifyContent: isDrawerOpen ? 'initial' : 'center', px: 2.5, '&:hover': { bgcolor: 'rgba(255, 215, 0, 0.1)' } }}
-            >
-              <ListItemIcon sx={{ minWidth: 0, mr: isDrawerOpen ? 3 : 'auto', justifyContent: 'center', color: '#FFD700' }}>
+            >              <ListItemIcon sx={{ minWidth: 0, mr: isDrawerOpen ? 3 : 'auto', justifyContent: 'center', color: 'hsl(var(--primary))' }}>
                 <Info />
               </ListItemIcon>
-              <ListItemText primary="Disclaimer" sx={{ opacity: isDrawerOpen ? 1 : 0 }} />
+              <ListItemText primary="Disclaimer" sx={{ opacity: isDrawerOpen ? 1 : 0, color: 'hsl(var(--foreground))', fontWeight: 500 }} />
             </ListItemButton>
           </ListItem>
         </List>

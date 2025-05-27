@@ -100,7 +100,7 @@ const CardinalPoints = styled(Box)({
 
 const SwamijiDirectionAR: React.FC<SwamijiDirectionARProps> = ({
   targetDirection = 0,
-  directionTolerance = 20,
+  directionTolerance = 15,
   imageUrl = '/images/swamiji-darshan.png',
   videoUrl = '/videos/darshan-background.mp4',
   onClose,
@@ -233,9 +233,11 @@ const SwamijiDirectionAR: React.FC<SwamijiDirectionARProps> = ({
       position: 'absolute' as 'absolute',
       top: '50%',
       left: '50%',
-      width: 'auto',
-      height: '90%', // Adjust as needed
-      maxWidth: '90%',
+      width: '50%',
+      height: '50%', // Adjust as needed
+      maxWidth: '500px',
+      maxHeight: '500px',
+      objectPosition: 'center%',
       objectFit: 'contain' as 'contain',
       transform: 'translate(-50%, -50%)',
       zIndex: 2,
