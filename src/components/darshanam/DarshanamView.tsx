@@ -191,15 +191,17 @@ export default function DarshanamView() {
 
       if (angularDifference <= FACING_THRESHOLD_DEGREES) {
         // Show darshan view and play audio when aligned
-        setShowDarshan(true);
-        if (darshanAudioRef.current && !isAudioPlaying) {
-          darshanAudioRef.current.play()
-            .then(() => setIsAudioPlaying(true))
-            .catch(error => console.error("Error playing audio:", error));
-        }
-        // Provide haptic feedback for 1 second
-        if (typeof window !== "undefined" && "vibrate" in navigator) {
-          navigator.vibrate([1000]); // 1 second vibration to indicate alignment
+        if (!showDarshan) {  // Only trigger these when first becoming aligned
+          setShowDarshan(true);
+          if (darshanAudioRef.current && !isAudioPlaying) {
+            darshanAudioRef.current.play()
+              .then(() => setIsAudioPlaying(true))
+              .catch(error => console.error("Error playing audio:", error));
+          }
+          // Provide haptic feedback only once when alignment is achieved
+          if (typeof window !== "undefined" && "vibrate" in navigator) {
+            navigator.vibrate([1000]); // Single 1-second vibration
+          }
         }
       } else {
         // Hide darshan view and stop audio when not aligned
