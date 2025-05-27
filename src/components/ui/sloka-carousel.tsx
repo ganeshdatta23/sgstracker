@@ -5,31 +5,27 @@ import { Card } from './card';
 
 const slokas = [
   {
-    text: `శ్రీనాథ చరణ ద్వంద్వం యస్యాం దిశి విరాజతే
-తస్యాం దిశే నమస్కుర్యాద్భక్త్యా ప్రతిదినం ప్రియే`,
+    text: `శ్రీనాథ చరణ ద్వంద్వం యస్యాం దిశి విరాజతే\n తస్యై దిశే నమస్కుర్యాత్ భక్త్యా ప్రతిదినం ప్రియే ॥`,
     language: 'Telugu'
   },
   {
-    text: `श्रीनाथ चरण द्वंद्वं यस्यां दिशि विराजते
-तस्यां दिशे नमस्कुर्याद् भक्त्या प्रतिदिनं प्रिये`,
+    text: `श्रीनाथ चरण द्वंद्वं यस्यां दिशि विराजते\nतस्यै दिशे नमस्कुर्याद् भक्त्या प्रतिदिनं प्रिये ॥` ,
     language: 'Sanskrit (Devanagari)'
   },
   {
-    text: `ஸ்ரீநாத சரண த்வந்த்வம் யஸ்யாம் திசி விராஜதே
-தஸ்யாம் திசே நமஸ்குர்யாத் பக்த்யா ப்ரதிதினம் ப்ரியே`,
+    text: `ஸ்ரீநாத சரண த்வந்த்வம் யஸ்யாம் திசி விராஜதே\n தஸ்யை திஶே நமஸ்குர்யாத் பக்த்யா ப்ரதிதினம் ப்ரியே ॥`,
     language: 'Tamil'
   },
   {
-    text: `ಶ್ರೀನಾಥ ಚರಣ ದ್ವಂದ್ವಂ ಯಸ್ಯಾಂ ದಿಶಿ ವಿರಾಜತೇ
-ತಸ್ಯಾಂ ದಿಶೇ ನಮಸ್ಕುರ್ಯಾದ್ ಭಕ್ತ್ಯಾ ಪ್ರತಿದಿನಂ ಪ್ರಿಯೇ`,
+    text: `ಶ್ರೀನಾಥ ಚರಣ ದ್ವಂದ್ವಂ ಯಸ್ಯಾಂ ದಿಶಿ ವಿರಾಜತೇ\n ತಸ್ಯೈ ದಿಶೇ ನಮಸ್ಕುರ್ಯಾತ್ ಭಕ್ತ್ಯಾ ಪ್ರತಿದಿನಂ ಪ್ರಿಯೇ ॥`,
     language: 'Kannada'
   },
   {
-    text: `śrīnātha-caraṇa-dvandvaṁ yasyāṁ diśi virājate
-tasyāṁ diśe namaskuryāt bhaktyā pratidinaṁ priye`,
+    text: `śrīnātha-caraṇa-dvandvaṁ yasyāṁ diśi virājate\n tasyai diśē namaskuryāt bhaktyā pratidinaṁ priyē ॥`,
     language: 'English'
   }
 ];
+const [line1, line2] = slokas[currentIndex].text.split('\n');
 
 export function SlokaCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -60,7 +56,8 @@ export function SlokaCarousel() {
         {/* Sloka text */}
         <div className="relative z-10 p-6 min-h-[250px] flex flex-col items-center justify-center text-center transition-opacity duration-1000">
           <pre className="font-['Sanskrit_2003'] text-lg sm:text-xl md:text-2xl leading-relaxed text-white whitespace-pre-line mb-4">
-            {slokas[currentIndex].text}
+          <p>{line1}</p>
+          <p>{line2}</p>
           </pre>
           <p className="text-blue-100/60 text-sm">{slokas[currentIndex].language}</p>
         </div>
