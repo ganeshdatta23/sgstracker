@@ -426,9 +426,9 @@ export default function HomePage() {
                   This tool is lovingly developed and maintained by a team of Datta devotees as a humble offering to Pujya Sri Appaji, with the blessings of Pujya Sri Datta Prabhu Appaji and under the guidance of Pujya Bala Swamiji.
                 </Typography>
                 <hr className="my-3 border-border/30" />
-                <Typography variant="caption" display="block" align="center" sx={{ color: 'yellow', mt: 2 }}>
+                {/* <Typography variant="caption" display="block" align="center" sx={{ color: 'yellow', mt: 2 }}>
                   This app is developed by a Datta Devotee and is not officially affiliated with Avadhootha Datta Peetham.
-                </Typography>
+                </Typography> */}
               </Box>
             </ScrollArea>
             <DialogFooter className="mt-4">

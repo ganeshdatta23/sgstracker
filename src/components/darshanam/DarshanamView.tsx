@@ -44,6 +44,7 @@ function getCardinalDirection(angle: number | null): string {
 
 export default function DarshanamView() {
   const router = useRouter();
+  const backgroundAudioRef = useRef<HTMLAudioElement>(null);
   const {
     locationData: swamijiLocation,
     loading: swamijiLocationLoading,
@@ -68,6 +69,8 @@ export default function DarshanamView() {
   const vibrationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const darshanAudioRef = useRef<HTMLAudioElement>(null);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [isSlokaPlaying, setIsSlokaPlaying] = useState(false);
+  const slokaAudioRef = useRef<HTMLAudioElement>(null);
 
   const requestOrientationPermission = useCallback(async () => {
     if (typeof window !== "undefined" && typeof (DeviceOrientationEvent as any).requestPermission === "function") {
@@ -87,6 +90,79 @@ export default function DarshanamView() {
     } else {
       setOrientationPermissionStatus("granted");
     }
+  }, [toast]);
+
+  // Start background music when component mounts
+  useEffect(() => {
+    const initializeAudio = async () => {
+      const audio = backgroundAudioRef.current;
+      if (!audio) return;
+
+      // Configure audio
+      audio.volume = 0.5; // Increased volume to 50%
+      audio.muted = false;
+
+      try {
+        // Try to load the audio first
+        await audio.load();
+        
+        // Check if audio can be played
+        const canPlay = await new Promise(resolve => {
+          audio.addEventListener('canplaythrough', () => resolve(true), { once: true });
+          audio.addEventListener('error', () => resolve(false), { once: true });
+          
+          // Timeout after 3 seconds
+          setTimeout(() => resolve(false), 3000);
+        });
+
+        if (!canPlay) {
+          console.error("Audio failed to load");
+          toast({
+            title: "Audio Issue",
+            description: "Unable to load the background music. Please check your audio settings.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Try autoplay
+        await audio.play();
+      } catch (error) {
+        console.error("Audio initialization error:", error);
+        
+        // Setup interaction handlers for browsers that block autoplay
+        const handleInteraction = async () => {
+          try {
+            await audio.play();
+            ['click', 'touchstart', 'pointerdown'].forEach(event => {
+              document.removeEventListener(event, handleInteraction);
+            });
+          } catch (playError) {
+            console.error("Play error after interaction:", playError);
+          }
+        };
+
+        ['click', 'touchstart', 'pointerdown'].forEach(event => {
+          document.addEventListener(event, handleInteraction, { once: true });
+        });
+
+        toast({
+          title: "Audio Needs Interaction",
+          description: "Touch anywhere on the screen to start the background music",
+          duration: 5000,
+        });
+      }
+    };
+
+    initializeAudio();
+
+    return () => {
+      const audio = backgroundAudioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, [toast]);
 
   useEffect(() => {
@@ -189,7 +265,8 @@ export default function DarshanamView() {
       const relativeBearingToSwamiji = (bearingToSwamiji - deviceHeading + 360) % 360;
       const angularDifference = Math.min(relativeBearingToSwamiji, 360 - relativeBearingToSwamiji);
 
-      if (angularDifference <= FACING_THRESHOLD_DEGREES) {
+      const isAligned = Math.abs(relativeBearingToSwamiji) <= FACING_THRESHOLD_DEGREES;
+      if (isAligned) {
         // Show darshan view and play audio when aligned
         if (!showDarshan) {  // Only trigger these when first becoming aligned
           setShowDarshan(true);
@@ -237,9 +314,14 @@ export default function DarshanamView() {
 
   const closeDarshanView = () => {
     setShowDarshan(false);
+    // Stop both darshan and background audio
     if (darshanAudioRef.current) {
       darshanAudioRef.current.pause();
       darshanAudioRef.current.currentTime = 0;
+    }
+    if (backgroundAudioRef.current) {
+      backgroundAudioRef.current.pause();
+      backgroundAudioRef.current.currentTime = 0;
     }
     setIsAudioPlaying(false);
     router.push('/');
@@ -253,6 +335,26 @@ export default function DarshanamView() {
         darshanAudioRef.current.play().catch(console.error);
       }
       setIsAudioPlaying(!isAudioPlaying);
+    }
+  };
+
+  const toggleSloka = () => {
+    if (slokaAudioRef.current) {
+      if (isSlokaPlaying) {
+        slokaAudioRef.current.pause();
+        slokaAudioRef.current.currentTime = 0;
+        setIsSlokaPlaying(false);
+      } else {
+        slokaAudioRef.current.play().catch(error => {
+          console.error("Error playing sloka:", error);
+          toast({
+            title: "Audio Error",
+            description: "Unable to play sloka. Please try again.",
+            variant: "destructive",
+          });
+        });
+        setIsSlokaPlaying(true);
+      }
     }
   };
 
@@ -331,6 +433,37 @@ export default function DarshanamView() {
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black text-white z-[50]">
+      {/* Background Music Audio */}
+      <audio 
+        ref={backgroundAudioRef}
+        src="/audio/background-music.mp3"
+        loop
+        preload="auto"
+        onError={(e) => {
+          console.error("Background audio error:", e);
+          toast({
+            title: "Audio Error",
+            description: "Unable to play background music. Please check your audio settings.",
+            variant: "destructive",
+          });
+        }}
+      />
+      {/* Sloka Audio */}
+      <audio 
+        ref={slokaAudioRef}
+        src="/audio/background-music.mp3"
+        preload="auto"
+        loop
+        onError={(e) => {
+          console.error("Sloka audio error:", e);
+          toast({
+            title: "Audio Error",
+            description: "Unable to play sloka. Please try again.",
+            variant: "destructive",
+          });
+          setIsSlokaPlaying(false);
+        }}
+      />
       {showDarshan ? (
         <div id="darshan-view-container" className="relative w-full h-full flex flex-col items-center justify-center">
           {/* Background Video */}
@@ -349,13 +482,19 @@ export default function DarshanamView() {
               src="/images/swamiji-darshan.png"
               alt="Sadguru Darshanam"
               layout="fill"
-              style={{ objectFit: "contain" }}
+              style={{ objectFit: "contain", transform: 'scale(0.7)' }} // Reduced size to 70%
               priority
               className="max-w-full max-h-full"
             />
           </div>
           {/* Darshan Audio */}
-          <audio ref={darshanAudioRef} src="/audio/background-music.mp3" loop />
+          <audio 
+            ref={darshanAudioRef} 
+            src="/audio/background-music.mp3" 
+            loop
+            preload="auto"
+            onError={(e) => console.error("Darshan audio error:", e)}
+          />
 
           {/* Controls Overlay for Darshan View */}
           <div className="absolute top-4 right-4 z-[20]">
@@ -369,7 +508,7 @@ export default function DarshanamView() {
               <X className="h-6 w-6" />
             </Button>
           </div>
-           <div className="absolute bottom-4 right-4 z-[20]">
+           {/* <div className="absolute bottom-4 right-4 z-[20]">
                 <Button 
                   onClick={toggleAudio}
                   variant="ghost" 
@@ -379,7 +518,7 @@ export default function DarshanamView() {
                 >
                   {isAudioPlaying ? <Volume2 className="h-6 w-6" /> : <VolumeX className="h-6 w-6" />}
                 </Button>
-            </div>
+            </div> */}
 
           {/* Optional: Message or blessing text over Darshan image */}
           <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[15] p-4 bg-black/40 rounded-lg max-w-md text-center backdrop-blur-sm">
@@ -425,36 +564,54 @@ export default function DarshanamView() {
             </div>
           </div>
 
-          {/* Instructions / Status Text - Below Compass */}
-          <div className="text-center pointer-events-auto bg-black/60 p-4 rounded-lg backdrop-blur-sm max-w-xs z-10">
-            {userGeoLocation && swamijiLocation && bearingToSwamiji !== null && deviceHeading !== null ? (
-              <>
-                <p className="text-base sm:text-lg font-semibold text-primary mb-1">
-                  Align with Sadguru
-                </p>
-                <p className="text-sm text-foreground/80">
-                  Turn your device until the <span className="text-accent font-semibold">arrow</span> aligns with the <span className="text-red-400 font-semibold">red line</span>.
-                </p>
-              </>
-            ) : userGeoLocation && swamijiLocation && bearingToSwamiji !== null ? (
+          {/* Instructions and Sloka Button */}
+          <div className="flex flex-col items-center gap-4 mt-[15vh]"> {/* Adjusted margin to move everything up */}
+            <Button
+              onClick={toggleSloka}
+              variant="outline"
+              size="lg"
+              className="bg-black/50 hover:bg-black/75 text-white border border-primary/50 hover:border-primary transition-colors mb-4"
+            >
+              {isSlokaPlaying ? (
+                <>
+                  <Volume2 className="mr-2 h-4 w-4" /> Playing Sloka...
+                </>
+              ) : (
+                <>
+                  <VolumeX className="mr-2 h-4 w-4" /> Click to Listen Sloka
+                </>
+              )}
+            </Button>
+            <div className="text-center pointer-events-auto bg-black/60 p-4 rounded-lg backdrop-blur-sm max-w-xs z-10">
+              {userGeoLocation && swamijiLocation && bearingToSwamiji !== null && deviceHeading !== null ? (
+                <>
+                  <p className="text-base sm:text-lg font-semibold text-primary mb-1">
+                    Align with Sadguru
+                  </p>
+                  <p className="text-sm text-foreground/80">
+                    Turn your device until the <span className="text-accent font-semibold">arrow</span> aligns with the <span className="text-red-400 font-semibold">red line</span>.
+                  </p>
+                </>
+              ) : userGeoLocation && swamijiLocation && bearingToSwamiji !== null ? (
               <p className="text-sm text-foreground/90">Calibrating compass... <br/>Move device in a figure-eight motion if needed.</p>
             ) : !userGeoLocation ? (
               <p className="text-sm text-yellow-400">Waiting for your location...</p>
             ) : (
               <p className="text-sm text-yellow-400">Fetching Guru's location details...</p>
             )}
+            </div>
           </div>
           
-          {/* Back button for Guidance UI */}
+          {/* Back/Close button */}
           <div className="absolute top-4 left-4 z-[60] pointer-events-auto">
               <Button 
                   onClick={() => router.push('/')} 
                   variant="ghost" 
                   size="icon"
-                  className="bg-black/50 hover:bg-black/75 text-white rounded-full w-12 h-12"
-                  aria-label="Back to Home"
+                  className="bg-black/50 hover:bg-black/75 text-white rounded-full w-12 h-12 flex items-center justify-center"
+                  aria-label="Close"
               >
-                  <ArrowLeft className="h-6 w-6" />
+                  <X className="h-6 w-6" />
               </Button>
           </div>
         </div>
