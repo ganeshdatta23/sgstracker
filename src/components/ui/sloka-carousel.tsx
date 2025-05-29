@@ -64,10 +64,10 @@ export function SlokaCarousel() {
           </div>
         </div>
 
-        <CardFooter className="relative z-10 p-3 bg-black/50 backdrop-blur-sm border-t border-[hsla(var(--primary),0.3)] justify-center mt-auto">
+        <CardFooter className="relative z-10 p-3 bg-black/50 backdrop-blur-sm border-[hsla(var(--primary),0.3)] justify-center mt-auto">
           <Button asChild variant="default" className="w-full sm:w-auto font-semibold text-base py-3 px-6 bg-primary text-primary-foreground hover:bg-primary/90">
             <Link href="/darshanam">
-              Sadguru Darshanam <LucideArrowUpRightSquare className="ml-2 h-5 w-5" />
+              Pujya Appaji's Direction <LucideArrowUpRightSquare className="ml-2 h-5 w-5" />
             </Link>
           </Button>
         </CardFooter>

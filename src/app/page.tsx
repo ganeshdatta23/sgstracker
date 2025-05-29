@@ -4,7 +4,7 @@ import { useSwamijiLocation } from '@/hooks/useSwamijiLocation';
 import { format } from 'date-fns';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { User, Compass, ChevronDown, ChevronUp, LucideArrowUpRightSquare, AlertCircle, BookOpen, MessageSquare, Sparkles, Users, Info, Music, Volume2, VolumeX, HelpCircle } from 'lucide-react';
+import { User, Compass, ChevronDown, ChevronUp, LucideArrowUpRightSquare, AlertCircle, BookOpen, MessageSquare, Sparkles, Users, Info, Music, Volume2, VolumeX, HelpCircle, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useEffect, useState, Fragment, useRef } from 'react';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle as DialogTitleComponent, DialogDescription as DialogDescriptionComponent, DialogFooter, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { calculateBearing } from '@/lib/utils';
+import { calculateBearing, calculateDistance, calculateTimeDifference } from '@/lib/utils';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -86,71 +86,56 @@ export default function HomePage() {
   // Slokas for the modal
   const slokasContent = [
     {
-      text: `गुरुर्ब्रह्मा गुरुर्विष्णुर्गुरुर्देवो महेश्वरः ।
-गुरुः साक्षात् परं ब्रह्म तस्मै श्रीगुरवे नमः ॥`,
+      text: "गुरुर्ब्रह्मा गुरुर्विष्णुर्गुरुर्देवो महेश्वरः । गुरुः साक्षात् परं ब्रह्म तस्मै श्रीगुरवे नमः ॥",
       translation: "The Guru is Brahma, the Guru is Vishnu, the Guru Deva is Maheswara (Shiva). The Guru is Verily the Para Brahman (Supreme Reality). Salutations to that Guru."
     },
     {
-      text: `अज्ञानतिमिरान्धस्य ज्ञानाञ्जनशलाकया ।
-चक्षुरुन्मीलितं येन तस्मै श्रीगुरवे नमः ॥`,
+      text: "अज्ञानतिमिरान्धस्य ज्ञानाञ्जनशलाकया । चक्षुरुन्मीलितं येन तस्मै श्रीगुरवे नमः ॥",
       translation: "Salutations to the Guru who opens the eyes of one blinded by the darkness of ignorance with the collyrium (kajal) of knowledge."
     },
     {
-      text: `ध्यानमूलं गुरोर्मूर्तिः पूजामूलं गुरोः पदम् ।
-मन्त्रमूलं गुरोर्वाक्यं मोक्षमूलं गुरोः कृपा ॥`,
+      text: "ध्यानमूलं गुरोर्मूर्तिः पूजामूलं गुरोः पदम् । मन्त्रमूलं गुरोर्वाक्यं मोक्षमूलं गुरोः कृपा ॥",
       translation: "The Guru's form is the root of meditation, the Guru's feet are the root of worship, the Guru's word is the root of Mantra, the Guru's grace is the root of liberation."
     },
   ];
 
   const userGuideContent = [
-    "Welcome to GuruDarshini, your spiritual companion app!",
-    "**Finding Appaji:** The app attempts to show Pujya Sri Swamiji's current location. If available, you'll see it on the map and the direction to face from your location.",
-    "**Darshanam View:** Use the 'Sadguru Darshanam' feature for an AR experience. When your device points towards Appaji, a special Darshan view will appear.",
-    "**Compass Accuracy:** For best results, ensure your phone's compass is calibrated. Moving in a figure-eight pattern can help.",
-    "**Location Permissions:** You'll need to grant location permissions for the app to determine your position and the direction to Appaji.",
-    "**Slokas & Messages:** Enjoy spiritual verses and messages for daily inspiration.",
-    "Sri Swamiji has specifically instructed that we should always look towards His Lotus Feet when doing Namaskaram. The compass feature of this app is a tool to help devotees orient themselves towards Swamiji's current physical location for this purpose.",
-    "This app also uses the device compass for iPhone users and GPS/camera for Android users to enhance the AR Darshan experience.",
-    "Pujya Appaji's location is updated by administrators. The location shown is the latest available.",
-    "The messages in the app are sourced from Pujya Sri Swamiji's discourses and published materials like Bhakti Mala, Antarvani etc. For this version, some generic spiritual messages and slokas are included.",
-    "For accurate direction, especially indoors or near large metal objects, compass readings can be affected. Try to be in an open area if possible for initial calibration.",
-    "The AR Darshan view will show a full-screen image of Sri Swamiji with a calming video background when you are correctly oriented.",
-    "A 'Close Darshan' button will be available to exit the full-screen AR view.",
-    "The initial slokas popup is now scrollable.",
-    "Administrators can update Sri Swamiji's location via a secure interface, ensuring the information is current.",
-    "This app uses the Haversine formula to calculate the great-circle distance and bearing to Sri Swamiji, ensuring accurate directional guidance.",
-    "The app features a neon gold and red theme for a divine visual experience.",
-    "The initial greeting message and slokas are now presented in a more engaging animated card carousel.",
-    "Remember to keep your app updated for the latest features and improvements.",
-    "Jai Guru Datta!"
-  ];
-  const additionalSpiritualMessages = [
-    "Music is the language of God. We are all His instruments. The aim is to become a perfect divine flute to express His music - Nada Brahma. HH Sri Swamiji",
-    "Meditation is the only way to truly know God. HH Sri Swamiji",
-    "The Guru is the one who removes the darkness of ignorance. HH Sri Swamiji",
-    "Selfless service is the highest form of worship. HH Sri Swamiji",
-    "Love all beings as manifestations of God. HH Sri Swamiji",
-    "Datta Kriya Yoga is a scientific technique for spiritual evolution. HH Sri Swamiji",
-    "Chant the divine name with faith and devotion. HH Sri Swamiji",
-    "Surrender your ego at the feet of the Guru. HH Sri Swamiji",
-    "Your body is a temple. Keep it pure and healthy. HH Sri Swamiji",
-    "Life is a journey from the self, through the self, to the Self. HH Sri Swamiji",
-    "When you are in the physical presence of Sadguru, every moment is precious. Do not waste it in worldly thoughts or conversations. Absorb the divine vibrations. SGS Posts",
-    "True devotion is not just about rituals; it is about constant remembrance and living by the Guru's teachings. SGS Posts",
-    "The path of spirituality requires patience, perseverance, and unwavering faith in the Sadguru. SGS Posts",
-    "Every experience, good or bad, is a lesson from the Guru designed for your spiritual growth. Learn from it and move forward. SGS Posts",
-    "The Guru's grace is like an ocean. It is up to you how much you can receive with the vessel of your devotion. SGS Posts",
-    "Sri Swamiji once explained that when He is on tour, His subtle body often remains at the Ashram. Thus, even when He is physically distant, connecting with the Ashram is connecting with Him. SGS Posts",
-    "Pujya Sri Swamiji has often emphasized the importance of respecting and preserving nature, seeing divinity in all elements. SGS Posts",
-    "The essence of all scriptures and teachings can be found in the Guru's words and actions. Pay close attention. SGS Posts",
-    "Humility and a genuine thirst for knowledge are key requisites for a spiritual seeker. Approach the Guru with an open heart. SGS Posts",
+    "**Getting Started**",
+    "1. **Location Services**: Enable your device's location services and grant permissions when prompted to use the direction features.",
+    "2. **Compass Calibration**: For accurate direction finding, calibrate your device's compass by moving your phone in a figure-8 pattern.",
+    "3. **Browser Permissions**: Allow browser permissions for location access when requested.",
+    
+    "**Main Features**",
+    "• **Guru Connect**: Shows Pujya Appaji's current location, your location, distance, and direction.",
+    "• **Direction Finding**: Displays the exact bearing (in degrees) to face towards Pujya Appaji's location.",
+    "• **Distance Calculation**: Shows the distance between your location and Pujya Appaji's location in kilometers.",
+    "• **Time Zone**: Displays local time and IST time difference.",
+    
+    "**Technical Notes**",
+    "• The app uses GPS and device compass for location tracking",
+    "• Location accuracy depends on your device's GPS signal strength",
+    "• For best results, use the app in open areas away from large metal objects",
+    "• The app automatically refreshes location data periodically",
+    
+    "**Troubleshooting**",
+    "• If location is not updating, check your device's location settings",
+    "• For compass issues, try recalibrating your device",
+    "• Clear browser cache if you experience data loading issues",
+    "• Ensure stable internet connection for real-time updates",
+    
+    "**Device Compatibility**",
+    "• Works on most modern browsers (Chrome, Safari, Firefox, Edge)",
+    "• Requires HTML5 geolocation support",
+    "• Compass features work best on mobile devices",
+    "• Supports both portrait and landscape orientations"
   ];
   
   // Updated content for BalaSwamiji's Blessings card (back side)
   const balaswamijiAnugrahaBhashanam = [
-    "It is said that we should bow down in reverence towards the direction where holy places like Kashi, Gaya, or Mysore are located. Similarly, wherever our Sadguru Pujya Sri Appaji travels or stays, we should prostrate ourselves in that direction, with the deep feeling that our Sadguru is always with us at all times. We must have the unwavering faith that our Sadguru is none other than Lord Srinatha Himself.",
-    "~ Chaturmasya Deeksha at 2004",
+    "The Guru Gita teaches that one should offer reverential prostrations in the direction of sacred places such as Kashi, Gaya, etc. Similarly, wherever our Sadguru, Pujya Sri Appaji, resides or travels, we should bow in that direction with deep devotion and faith. It is to be understood that our Sadguru is ever-present with us, guiding and protecting us at all times. We must hold the unwavering conviction that our Sadguru is none other than Lord Śrīnātha Himself.",
+    "~ Guru Gita Discourse on Chaturmasya Deeksha at 2004"
   ];
+  
   
   // balaswamijiBlessingsContent array (original) can be removed or kept if used elsewhere, 
   // for this card, we use balaswamijiAnugrahaBhashanam
@@ -312,18 +297,20 @@ export default function HomePage() {
         
         <Dialog open={isGuruConnectModalOpen} onOpenChange={setIsGuruConnectModalOpen}>
           <DialogContent className="sm:max-w-lg bg-card border-border smooth-all">
-            <DialogHeader className="pb-2">
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                <Compass className="mr-2 h-6 w-6 text-accent" />
-                <Typography variant="h6" component="h2" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-                  Guru Connect
-                </Typography>
-              </Box>
-              <Typography variant="body2" sx={{ color: 'text.secondary', pl: '32px' }}>
+            <DialogHeader>
+              <DialogTitleComponent className="content-header">Guru Connect</DialogTitleComponent>
+              <DialogDescriptionComponent className="content-subheading">
                 Locate Appaji and find your bearing.
-              </Typography>
-          </DialogHeader>
-            <ScrollArea className="max-h-[calc(70vh-60px)] p-0 pr-1 mt-0">
+              </DialogDescriptionComponent>
+            </DialogHeader>
+            <button 
+              onClick={() => setIsGuruConnectModalOpen(false)}
+              className="close-button"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
+            <ScrollArea className="card-content">
               <Accordion type="single" collapsible className="w-full" onValueChange={handleAccordionChange} value={accordionValue} defaultValue="dashboard-item">
                 <AccordionItem value="dashboard-item" className="border-b-0 px-2">
                 <AccordionTrigger className="text-base hover:no-underline focus:no-underline text-foreground/90 py-3">
@@ -356,49 +343,98 @@ export default function HomePage() {
                   )}
                   {userGeoLocation && (
                       <Box sx={{ p: 1.5, bgcolor: 'background.paper', borderRadius: 1 }}>
-                        <Typography variant="subtitle2" sx={{ color: 'text.primary', mb: 0.5, fontWeight: 'medium' }}>Your Location:</Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>Lat: {userGeoLocation.latitude.toFixed(3)}, Lng: {userGeoLocation.longitude.toFixed(3)}</Typography>
+                        <Typography variant="subtitle2" sx={{ color: 'primary.main', mb: 0.5, fontWeight: 'medium' }}>Your Location:</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                          Coordinates: {userGeoLocation.latitude.toFixed(3)}, {userGeoLocation.longitude.toFixed(3)}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                          Local Time: {new Date().toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit',
+                            hour12: false,
+                            timeZoneName: 'short'
+                          })}
+                        </Typography>
                       </Box>
                     )}
                     <Box sx={{ p: 1.5, bgcolor: 'background.paper', borderRadius: 1 }}>
-                      <Typography variant="subtitle2" sx={{ color: 'text.primary', mb: 0.5, fontWeight: 'medium' }}>Appaji's Location:</Typography>
-                    {swamijiLocationLoading && <Skeleton className="h-8 w-3/4 rounded-md" />}
+                      <Typography variant="subtitle2" sx={{ color: 'primary.main', mb: 0.5, fontWeight: 'medium' }}>Pujya Appaji's Location:</Typography>
+                      {swamijiLocationLoading && <Skeleton className="h-8 w-3/4 rounded-md" />}
                       {swamijiLocationError && <Typography variant="caption" sx={{color: 'error.main'}}>Error loading Appaji's location.</Typography>}
-                    {locationData && (
-                      <>
-                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>{locationData.address || `Lat: ${locationData.latitude.toFixed(3)}, Lng: ${locationData.longitude.toFixed(3)}`}</Typography>
-                          <Typography variant="caption" sx={{ color: 'text.disabled', mt: 0.5 }} display="block">Updated: {format(new Date(locationData.updatedAt), 'PPp')}</Typography>
+                      {locationData && (
+                        <>
+                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                            Address: {locationData.address || 'Not available'}
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                            Coordinates: {locationData.latitude.toFixed(3)}, {locationData.longitude.toFixed(3)}
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                            IST Time: {new Date().toLocaleTimeString('en-US', { 
+                              hour: '2-digit', 
+                              minute: '2-digit',
+                              hour12: false,
+                              timeZone: 'Asia/Kolkata'
+                            })} IST
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'text.disabled', mt: 0.5 }} display="block">
+                            Last Updated: {format(new Date(locationData.updatedAt), 'PPp')}
+                          </Typography>
                         </>
                       )}
-                      {!locationData && !swamijiLocationLoading && !swamijiLocationError && <Typography variant="caption" sx={{color: 'text.disabled'}}>Appaji's location data is currently unavailable.</Typography>}
+                      {!locationData && !swamijiLocationLoading && !swamijiLocationError && 
+                        <Typography variant="caption" sx={{color: 'text.disabled'}}>
+                          Appaji's location data is currently unavailable.
+                        </Typography>
+                      }
                     </Box>
                     {userGeoLocation && locationData && bearingToSwamiji !== null && (
-                      <Box sx={{ p: 1.5, bgcolor: 'primary.light', borderRadius: 1, color: 'primary.contrastText' }}>
-                        <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 'bold' }}>Direction to Appaji:</Typography>
-                        <Box sx={{display: 'flex', alignItems: 'center'}}>
+                      <Box sx={{ p: 1.5, bgcolor: 'primary.dark', borderRadius: 1, color: 'primary.contrastText' }}>
+                        <Typography variant="subtitle2" sx={{ color: 'primary.light', mb: 0.5, fontWeight: 'bold' }}>Connection Details:</Typography>
+                        <Box sx={{display: 'flex', alignItems: 'center', mb: 1}}>
                           <Compass className="mr-1 h-4 w-4" /> 
-                          <Typography variant="body2">Face <Typography component="b" sx={{fontWeight: 'bold', mx: 0.5}}>{bearingToSwamiji.toFixed(0)}°</Typography> from North.</Typography>
+                          <Typography variant="body2">
+                            Direction: <Typography component="b" sx={{fontWeight: 'bold', mx: 0.5}}>
+                              {bearingToSwamiji.toFixed(0)}°
+                            </Typography> from North
+                          </Typography>
                         </Box>
+                        <Typography variant="body2" sx={{ mt: 0.5 }}>
+                          Distance: {calculateDistance(
+                            userGeoLocation.latitude,
+                            userGeoLocation.longitude,
+                            locationData.latitude,
+                            locationData.longitude
+                          ).toFixed(1)} km
+                        </Typography>
+                        <Typography variant="body2" sx={{ mt: 0.5 }}>
+                          Time Difference: {calculateTimeDifference().toFixed(2)} hours
+                        </Typography>
                       </Box>
-                  )}
+                    )}
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
             </ScrollArea>
-            <DialogFooter className="mt-2 pt-2 border-t border-border">
-              <Button variant="outline" onClick={() => setIsGuruConnectModalOpen(false)} className="text-primary border-primary hover:bg-primary/10 smooth-all hover:scale-105">
-                Close
-              </Button>
-            </DialogFooter>
           </DialogContent>
         </Dialog>
         
         <Dialog open={isDisclaimerModalOpen} onOpenChange={setIsDisclaimerModalOpen}>
           <DialogContent className="sm:max-w-lg bg-card border-border smooth-all">
             <DialogHeader>
-              <DialogTitleComponent className="text-primary text-xl">Disclaimer</DialogTitleComponent>
+              <DialogTitleComponent className="content-header">About</DialogTitleComponent>
+              <DialogDescriptionComponent className="content-subheading">
+                Important information about GuruDarshini.
+              </DialogDescriptionComponent>
             </DialogHeader>
-            <ScrollArea className="max-h-[60vh] p-1 pr-3">
+            <button 
+              onClick={() => setIsDisclaimerModalOpen(false)}
+              className="close-button"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
+            <ScrollArea className="card-content">
               <Box sx={{ py: 2, px: { xs: 1, sm: 2 }, color: 'text.primary' }}>
                 <Typography variant="h6" component="h2" align="center" sx={{ color: 'primary.main', mb: 2, fontWeight: 'bold' }}>
                   Jaya Guru Datta
@@ -429,29 +465,32 @@ export default function HomePage() {
                 {/* <Typography variant="caption" display="block" align="center" sx={{ color: 'yellow', mt: 2 }}>
                   This app is developed by a Datta Devotee and is not officially affiliated with Avadhootha Datta Peetham.
                 </Typography> */}
+                <Typography variant="body2" align="center" sx={{ color: 'green', mt: 3 }}>
+                  For feedback or support, please contact: <Link href="mailto:dattadev.sgs@gmail.com" style={{ color: 'hsl(var(--primary))', textDecoration: 'underline' }}>
+                    dattadev.sgs@gmail.com
+                  </Link>
+                </Typography>
               </Box>
             </ScrollArea>
-            <DialogFooter className="mt-4">
-              <Button 
-                variant="default" 
-                onClick={() => { setIsDisclaimerModalOpen(false); handleUserInteraction(); }} 
-                className="bg-primary text-primary-foreground hover:bg-primary/90 smooth-all hover:scale-105"
-              >
-                Accept and Continue
-            </Button>
-            </DialogFooter>
           </DialogContent>
         </Dialog>
         
-      <Dialog open={isSlokaModalOpen} onOpenChange={(open) => {setIsSlokaModalOpen(open); if(open) handleUserInteraction();}}>
-          <DialogContent className="sm:max-w-[600px] bg-card border-border smooth-all">
-          <DialogHeader>
-            <DialogTitleComponent className="text-primary text-xl">Sacred Slokas</DialogTitleComponent>
-            <DialogDescriptionComponent className="text-muted-foreground">
-              Contemplate these sacred verses.
-            </DialogDescriptionComponent>
-          </DialogHeader>
-          <ScrollArea className="max-h-[70vh] p-1 pr-3">
+      <Dialog open={isSlokaModalOpen} onOpenChange={setIsSlokaModalOpen}>
+          <DialogContent className="sm:max-w-lg bg-card border-border smooth-all">
+            <DialogHeader>
+              <DialogTitleComponent className="content-header">Sacred Slokas</DialogTitleComponent>
+              <DialogDescriptionComponent className="content-subheading">
+                Divine verses for spiritual elevation.
+              </DialogDescriptionComponent>
+            </DialogHeader>
+            <button 
+              onClick={() => setIsSlokaModalOpen(false)}
+              className="close-button"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
+            <ScrollArea className="card-content">
               <Box sx={{ py: 2, px: { xs: 0, sm: 1 } }}>
               {slokasContent.map((sloka, index) => (
                   <Box
@@ -471,36 +510,31 @@ export default function HomePage() {
                         fontFamily: 'Sanskrit_2003, Arial, sans-serif',
                         fontSize: { xs: '1.1rem', sm: '1.25rem' }, 
                         lineHeight: 1.8, 
-                        whiteSpace: 'pre-line', 
                         color: 'warning.light',
-                        mb: 1.5
+                        mb: 1.5, // Keep margin-bottom
+                        whiteSpace: 'normal', // Allow text to wrap naturally
+                        textAlign: 'center'   // Center the text
                       }}
                     >
-                    {sloka.text}
+                      {sloka.text}
                     </Typography>
                     <hr className="my-2 border-border/30" />
                     <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'silver' }}>
-                    {sloka.translation}
+                      {sloka.translation}
                     </Typography>
                   </Box>
               ))}
               </Box>
-          </ScrollArea>
-          <DialogFooter className="mt-4">
-            <DialogClose asChild>
-                <Button variant="outline" className="text-primary border-primary hover:bg-primary/10 smooth-all hover:scale-105">Close</Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
 
         <PersonalizedGreeting locationName={locationNameForGreeting} />
         
-        {/* "Swamiji sitting smiling" Card REMOVED */}
-        {/* 
-        <div className="my-4 md:my-6" onClick={handleUserInteraction}>
-          <Card className="w-full overflow-hidden rounded-xl shadow-lg bg-card/80 backdrop-blur-md hover:shadow-primary/30 transition-shadow duration-300">
-            <CardContent className="p-0 relative aspect-[3/2] sm:aspect-video md:aspect-[16/9]">
+        {/* "Swamiji sitting smiling" Card */}
+        {/* <div className="my-4 md:my-6" onClick={handleUserInteraction}>
+          <Card className="w-full overflow-hidden rounded-xl shadow-lg bg-card/80 backdrop-blur-md hover:shadow-primary/30 transition-shadow duration-300"> */}
+            {/* <CardContent className="p-0 relative aspect-[3/2] sm:aspect-video md:aspect-[16/9] border-none">
               <Image 
                 src="/images/appaji-sitting-smile.png" 
                 alt="Appaji Darshanam" 
@@ -510,18 +544,16 @@ export default function HomePage() {
                 priority 
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
-            </CardContent>
-            <CardFooter className="p-3 bg-black/40 backdrop-blur-sm border-t border-border/50 justify-center">
+            </CardContent> */}
+            {/* <CardFooter className="p-3 bg-black/40 backdrop-blur-sm justify-center border-none">
               <Button asChild variant="default" className="w-full sm:w-auto font-semibold text-base py-3 px-6 bg-primary text-primary-foreground hover:bg-primary/90">
                 <Link href="/darshanam">
                   Sadguru Darshanam <LucideArrowUpRightSquare className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-            </CardFooter>
-          </Card>
-          <SlokaCarousel />
-        </div>
-        */}
+            </CardFooter> */}
+          {/* </Card>
+        </div> */}
 
         {/* SlokaCarousel is now the main component after greeting, will have the button added to it directly */}
         <div className="my-4 md:my-6 card-hover-effect rounded-xl" onClick={handleUserInteraction}>
@@ -549,7 +581,7 @@ export default function HomePage() {
                   onClick={() => setShowBlessingsText(true)} 
                   className="w-full sm:w-auto font-semibold text-base py-3 px-6 bg-primary text-primary-foreground hover:bg-primary/90 smooth-all hover:scale-105"
                 >
-                  Read Anugraha Bhashanam
+                  Sri Bala Swamiji's Message
                 </Button>
               </CardFooter>
             </>
@@ -561,10 +593,16 @@ export default function HomePage() {
                   <CardTitle className="text-primary flex items-center">
                     <BookOpen className="mr-2 h-6 w-6 text-primary" /> BalaSwamiji's Blessings
                   </CardTitle>
-                  <CardDescription className="text-muted-foreground">Words of wisdom.</CardDescription>
+                  {/* <CardDescription className="text-muted-foreground">Words of wisdom.</CardDescription> */}
                 </div>
-                <Button variant="outline" size="sm" onClick={() => setShowBlessingsText(false)} className="text-primary border-primary hover:bg-primary/10 smooth-all hover:scale-105">
-                  Close
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setShowBlessingsText(false)} 
+                  className="text-white hover:bg-white/10 rounded-full"
+                  aria-label="Close blessings"
+                >
+                  <X className="h-5 w-5" />
                 </Button>
               </CardHeader>
               <CardContent>
@@ -583,63 +621,40 @@ export default function HomePage() {
         </Card>
 
         <Dialog open={isGuideModalOpen} onOpenChange={setIsGuideModalOpen}>
-          <DialogContent className="sm:max-w-lg md:max-w-xl lg:max-w-2xl bg-card/90 backdrop-blur-md border-primary/50 shadow-xl text-foreground max-h-[80vh] flex flex-col smooth-all">
-          <DialogHeader>
-            <DialogTitleComponent className="text-2xl text-primary">User Guide & Messages</DialogTitleComponent>
-            <DialogDescriptionComponent className="text-muted-foreground">How to use GuruDarshini & Words of Wisdom.</DialogDescriptionComponent>
-          </DialogHeader>
-          <ScrollArea className="flex-grow relative z-10 h-full pr-2">
-              <Box sx={{ p: { xs: 1.5, sm: 2.5 }, color: 'red' }}>
-                <Typography variant="h5" component="h3" sx={{ color: 'primary.light', mt: 1, mb: 1.5, fontWeight: 'medium' }}>
+          <DialogContent className="sm:max-w-lg bg-card border-border smooth-all">
+            <DialogHeader>
+              <DialogTitleComponent className="content-header">User Guide</DialogTitleComponent>
+              <DialogDescriptionComponent className="content-subheading">
+                Learn how to use GuruDarshini effectively.
+              </DialogDescriptionComponent>
+            </DialogHeader>
+            <button 
+              onClick={() => setIsGuideModalOpen(false)}
+              className="close-button"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
+            <ScrollArea className="card-content">
+              <Box sx={{ p: { xs: 1.5, sm: 2.5 }, color: 'white' }}>
+                {/* <Typography variant="h5" component="h3" sx={{ color: 'primary.light', mt: 1, mb: 1.5, fontWeight: 'medium' }}>
                   User Guide:
-                </Typography>
-  {userGuideContent.map((paragraph, index) => (
+                </Typography> */}
+                {userGuideContent.map((paragraph, index) => (
                   <Typography
-      key={`guide-${index}`}
+                    key={`guide-${index}`}
                     variant="body1"
                     paragraph
-                    sx={{ mb: 1.5, lineHeight: 1.7 }}
-      dangerouslySetInnerHTML={{
-                      __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #FFD700;">$1</strong>') // Style strong tag if needed
-      }}
-    />
-  ))}
-
-                <hr className="my-4 border-border" /> {/* Or MUI Divider */}
-
-                <Typography variant="h5" component="h3" sx={{ color: 'primary.light', mt: 3, mb: 1.5, fontWeight: 'medium' }}>
-                  Spiritual Messages:
-                </Typography>
-  {additionalSpiritualMessages.map((message, index) => (
-                  <Box 
-      key={`msg-${index}`}
-                    component="blockquote"
-                    sx={{ 
-                      borderLeft: 4, 
-                      borderColor: 'secondary.main', // Use theme secondary color for quote border
-                      pl: 2, 
-                      my: 2, 
-                      fontStyle: 'italic', 
-                      color: 'white', 
-                      bgcolor: 'action.hover', 
-                      py: 0.5, 
-                      borderRadius: 1 
+                    sx={{ mb: 1.5, lineHeight: 1.7, color: 'white' }}
+                    dangerouslySetInnerHTML={{
+                      __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #FFD700;">$1</strong>')
                     }}
-                  >
-                    <Typography variant="body1">
-      {message}
-                    </Typography>
-                  </Box>
-  ))}
+                  />
+                ))}
               </Box>
-          </ScrollArea>
-          <DialogFooter className="mt-4">
-            <DialogClose asChild>
-                <Button variant="outline" className="text-primary border-primary hover:bg-primary/10 smooth-all hover:scale-105">Close</Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
 
     </div>
     </ResponsiveDrawer>

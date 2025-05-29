@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { CompassView } from '@/components/compass/CompassView';
 
 interface CompassCalibrationProps {
   isVisible: boolean;
@@ -21,30 +22,32 @@ export function CompassCalibration({ isVisible }: CompassCalibrationProps) {
   };
 
   const requestSensorAccess = async () => {
-    try {
-      if (
-        typeof DeviceOrientationEvent !== 'undefined' &&
-        typeof DeviceOrientationEvent.requestPermission === 'function'
-      ) {
-        const permission = await DeviceOrientationEvent.requestPermission();
+    const DOE = DeviceOrientationEvent as any; // Assign to an any typed variable
+    if (
+      typeof DOE !== 'undefined' &&
+      typeof DOE.requestPermission === 'function'
+    ) {
+      try {
+        const permission = await DOE.requestPermission();
         if (permission !== 'granted') {
           setHasPermission(false);
           return;
         }
+      } catch (error) {
+        console.error('Sensor permission error:', error);
+        setHasPermission(false);
       }
-
-      window.addEventListener('deviceorientation', handleOrientation, true);
-      setStarted(true);
-    } catch (error) {
-      console.error('Sensor permission error:', error);
-      setHasPermission(false);
     }
+
+    window.addEventListener('deviceorientation', handleOrientation, true);
+    setStarted(true);
   };
 
   useEffect(() => {
+    const DOE = DeviceOrientationEvent as any; // Assign to an any typed variable
     if (
-      typeof DeviceOrientationEvent !== 'undefined' &&
-      typeof DeviceOrientationEvent.requestPermission !== 'function'
+      typeof DOE !== 'undefined' &&
+      typeof DOE.requestPermission !== 'function'
     ) {
       window.addEventListener('deviceorientation', handleOrientation, true);
       setStarted(true);

@@ -17,7 +17,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import useMediaQuery from '@mui/material/useMediaQuery'; // For responsive design
 import { useTheme } from '@mui/material/styles'; // To access theme breakpoints
-import { Info, BookOpen, Compass, Users, HelpCircle } from 'lucide-react';
+import { Info, BookOpen, Compass, Users, HelpCircle, X } from 'lucide-react'; // Added X
 import Link from 'next/link'; // Import Link from Next.js
 
 const drawerWidth = 240;
@@ -51,54 +51,131 @@ export default function ResponsiveDrawer({
 
   const drawerContent = (
     <>
-      <Toolbar /> 
+      <Toolbar sx={{ position: 'relative', justifyContent: 'flex-end' }}> 
+        {/* Close button for mobile drawer */}
+        {isMobile && (
+          <IconButton
+            aria-label="close drawer"
+            onClick={handleDrawerToggle}
+            sx={{
+              // position: 'absolute', // No longer needed if Toolbar uses flex-end
+              // right: 8,
+              // top: '50%',
+              // transform: 'translateY(-50%)',
+              color: 'hsl(var(--primary))', 
+            }}
+          >
+            <X size={24} />
+          </IconButton>
+        )}
+      </Toolbar> 
       <Divider sx={{ borderColor: 'hsla(var(--primary), 0.2)' }} />
       <List>
+        {/* Home */}
         <ListItem disablePadding>
-          <Link href="/" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
-            <ListItemButton onClick={() => { if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
+          <Link href="/" passHref style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>
+            <ListItemButton onClick={() => { if(isMobile) setMobileOpen(false); }} sx={{ 
+              '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, 
+              transition: 'background-color 0.2s ease-in-out',
+              fontFamily: 'Poppins, sans-serif'
+            }}>
               <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><HomeIcon /></ListItemIcon>
-              <ListItemText primary="Home" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }}/>
+              <ListItemText primary="Home" sx={{ 
+                color: 'hsl(var(--foreground))', 
+                fontWeight: 500,
+                '.MuiTypography-root': { fontFamily: 'Poppins, sans-serif' }
+              }}/>
             </ListItemButton>
           </Link>
         </ListItem>
+
+        {/* Guru Connect */}
         <ListItem disablePadding>
-          <Link href="/admin" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
-            <ListItemButton onClick={() => { if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
-              <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><AdminPanelSettingsIcon /></ListItemIcon>
-              <ListItemText primary="Admin" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }} />
-            </ListItemButton>
-          </Link>
-        </ListItem>
-        <Divider sx={{ borderColor: 'hsla(var(--primary), 0.2)', my:1 }} />
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => { onDashboardClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
+          <ListItemButton onClick={() => { onDashboardClick(); if(isMobile) setMobileOpen(false); }} sx={{ 
+            '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, 
+            transition: 'background-color 0.2s ease-in-out',
+            fontFamily: 'Poppins, sans-serif'
+          }}>
             <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><Compass /></ListItemIcon>
-            <ListItemText primary="Guru Connect" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }} />
+            <ListItemText primary="Dash Board" sx={{ 
+              color: 'hsl(var(--foreground))', 
+              fontWeight: 500,
+              '.MuiTypography-root': { fontFamily: 'Poppins, sans-serif' }
+            }} />
           </ListItemButton>
         </ListItem>
+
+        {/* Sacred Slokas */}
         <ListItem disablePadding>
-          <ListItemButton onClick={() => { onSlokasClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
+          <ListItemButton onClick={() => { onSlokasClick(); if(isMobile) setMobileOpen(false); }} sx={{ 
+            '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, 
+            transition: 'background-color 0.2s ease-in-out',
+            fontFamily: 'Poppins, sans-serif'
+          }}>
             <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><BookOpen /></ListItemIcon>
-            <ListItemText primary="Sacred Slokas" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }} />
+            <ListItemText primary="Sacred Slokas" sx={{ 
+              color: 'hsl(var(--foreground))', 
+              fontWeight: 500,
+              '.MuiTypography-root': { fontFamily: 'Poppins, sans-serif' }
+            }} />
           </ListItemButton>
         </ListItem>
-      </List>
-      <Divider sx={{ borderColor: 'hsla(var(--primary), 0.2)' }} />
-      <List>
+
+        {/* User Guide */}
         <ListItem disablePadding>
-          <ListItemButton onClick={() => { onGuideClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
+          <ListItemButton onClick={() => { onGuideClick(); if(isMobile) setMobileOpen(false); }} sx={{ 
+            '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, 
+            transition: 'background-color 0.2s ease-in-out',
+            fontFamily: 'Poppins, sans-serif'
+          }}>
             <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><HelpCircle /></ListItemIcon>
-            <ListItemText primary="User Guide" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }}/>
+            <ListItemText primary="User Guide" sx={{ 
+              color: 'hsl(var(--foreground))', 
+              fontWeight: 500,
+              '.MuiTypography-root': { fontFamily: 'Poppins, sans-serif' }
+            }}/>
           </ListItemButton>
         </ListItem>
+
+        {/* About */}
         <ListItem disablePadding>
-          <ListItemButton onClick={() => { onDisclaimerClick(); if(isMobile) setMobileOpen(false); }} sx={{ '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, transition: 'background-color 0.2s ease-in-out' }}>
+          <ListItemButton onClick={() => { onDisclaimerClick(); if(isMobile) setMobileOpen(false); }} sx={{ 
+            '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, 
+            transition: 'background-color 0.2s ease-in-out',
+            fontFamily: 'Poppins, sans-serif'
+          }}>
             <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><Info /></ListItemIcon>
-            <ListItemText primary="About" sx={{ color: 'hsl(var(--foreground))', fontWeight: 500 }} />
+            <ListItemText primary="About" sx={{ 
+              color: 'hsl(var(--foreground))', 
+              fontWeight: 500,
+              '.MuiTypography-root': { fontFamily: 'Poppins, sans-serif' }
+            }} />
           </ListItemButton>
         </ListItem>
       </List>
+
+      {/* Add a divider and Admin Login at the bottom */}
+      <Box sx={{ mt: 'auto' }}>
+        <Divider sx={{ borderColor: 'hsla(var(--primary), 0.2)' }} />
+        <List>
+          <ListItem disablePadding>
+            <Link href="/admin" passHref style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>
+              <ListItemButton onClick={() => { if(isMobile) setMobileOpen(false); }} sx={{ 
+                '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, 
+                transition: 'background-color 0.2s ease-in-out',
+                fontFamily: 'Poppins, sans-serif'
+              }}>
+                <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><AdminPanelSettingsIcon /></ListItemIcon>
+                <ListItemText primary="Admin Login" sx={{ 
+                  color: 'hsl(var(--foreground))', 
+                  fontWeight: 500,
+                  '.MuiTypography-root': { fontFamily: 'Poppins, sans-serif' }
+                }}/>
+              </ListItemButton>
+            </Link>
+          </ListItem>
+        </List>
+      </Box>
     </>
   );
 

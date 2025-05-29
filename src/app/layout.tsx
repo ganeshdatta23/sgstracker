@@ -1,23 +1,14 @@
 import type { Metadata } from 'next';
-import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
-import { Merriweather, Cinzel } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
 import AppShell from '@/components/layout/AppShell';
 
-// Initialize new fonts
-const merriweather = Merriweather({
+// Initialize Poppins font
+const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['300', '400', '700', '900'],
-  variable: '--font-merriweather',
-  display: 'swap',
-});
-
-const cinzel = Cinzel({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
-  variable: '--font-cinzel',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-poppins',
   display: 'swap',
 });
 
@@ -36,13 +27,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${merriweather.variable} ${cinzel.variable}`} suppressHydrationWarning={true}>
+    <html lang="en" className={`${poppins.variable}`} suppressHydrationWarning={true}>
       <head>
         <link rel="icon" href="/images/favicon.png" type="image/png" />
       </head>
       {/* Remove gradient text and neon glow from global body styles */}
       <body
-        className="antialiased"
+        className="antialiased font-sans"
         suppressHydrationWarning={true}
       >
         {/* Starry background is now defined in AppShell for better control with content */}

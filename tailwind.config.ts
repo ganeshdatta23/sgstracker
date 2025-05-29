@@ -17,6 +17,10 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Poppins', 'system-ui', 'sans-serif'],
+        heading: ['Poppins', 'system-ui', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -85,14 +89,40 @@ const config: Config = {
           to: { height: "0" },
         },
         glow: {
-          '0%, 100%': { filter: 'drop-shadow(0 0 8px #FFD700) drop-shadow(0 0 10px #B22222)' },
-          '50%': { filter: 'drop-shadow(0 0 20px #FFD700) drop-shadow(0 0 25px #B22222)' },
+          '0%, 100%': {
+            textShadow: '0 0 20px rgba(253, 224, 71, 0.7), 0 0 40px rgba(253, 224, 71, 0.5)',
+          },
+          '50%': {
+            textShadow: '0 0 30px rgba(253, 224, 71, 0.9), 0 0 50px rgba(253, 224, 71, 0.7)',
+          },
+        },
+        fadeIn: {
+          from: {
+            opacity: '0',
+            transform: 'translate(-50%, 20px)',
+          },
+          to: {
+            opacity: '1',
+            transform: 'translate(-50%, 0)',
+          },
+        },
+        slideIn: {
+          from: {
+            opacity: '0',
+            transform: 'translateY(10px)',
+          },
+          to: {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         glow: 'glow 2s ease-in-out infinite',
+        fadeIn: 'fadeIn 1s ease-out forwards',
+        slideIn: 'slideIn 0.8s ease-out forwards',
       },
     },
   },

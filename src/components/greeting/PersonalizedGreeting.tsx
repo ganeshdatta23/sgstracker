@@ -47,24 +47,46 @@ export default function PersonalizedGreeting({ locationName }: Props) {
 
   return (
   <Card
-  className="w-full h-[300px] relative rounded-xl overflow-hidden bg-black/5"
->
-  {/* Background Image */}
-  <div
-    className="absolute inset-0 bg-cover bg-center"
-    style={{
-      backgroundImage: "url('/images/dattapeetham_7e154e37ea24615612494ddffa91e134.jpg')",
-    }}
-  ></div>
+    className="w-full h-[300px] relative rounded-xl overflow-hidden bg-black/5"
+  >
+    {/* Background Image */}
+    <div
+      className="absolute inset-0 bg-cover bg-center"
+      style={{
+        backgroundImage: "url('/images/dattapeetham_7e154e37ea24615612494ddffa91e134.jpg')",
+      }}
+    ></div>
 
-  {/* Blurred Banner at Bottom */}
-  <div className="absolute bottom-0 w-full bg-black/30 backdrop-blur-sm p-2 text-center">
-    <p className="text-sm font-medium" style={{ color: "gold" }}>
-      {currentMessage}
-    </p>
-  </div>
-</Card>
+    {/* Location and Time Overlay */}
+    <div className="absolute top-2 right-2 bg-black/40 backdrop-blur-sm p-2.5 rounded-lg text-white border border-[#FFD700]/30 shadow-lg" style={{ maxWidth: '200px' }}>
+      <p className="text-xs font-medium" style={{ 
+        fontFamily: 'Poppins, sans-serif',
+        color: '#FFD700' // Gold color for the header
+      }}>
+        Pujya Appaji at: <br /> 
+        <span className="text-white/90">{locationName}</span>
+      </p>
+      <p className="text-xs mt-1" style={{ 
+        fontFamily: 'Poppins, sans-serif',
+        color: '#FFD700' // Gold color for the header
+      }}>
+        Time: <span className="text-white/90">
+          {new Date().toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: false,
+            timeZone: 'Asia/Kolkata'
+          })} IST
+        </span>
+      </p>
+    </div>
 
-
+    {/* Blurred Banner at Bottom */}
+    <div className="absolute bottom-0 w-full bg-black/30 backdrop-blur-sm p-2 text-center">
+      <p className="text-sm font-medium" style={{ color: "gold", fontFamily: 'Poppins, sans-serif' }}>
+        {currentMessage}
+      </p>
+    </div>
+  </Card>
   );
 }

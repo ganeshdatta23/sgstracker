@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,24 +15,24 @@
     --popover: 240 60% 4%; /* Even Darker Blue for popovers */
     --popover-foreground: 240 20% 95%;
     
-    --primary: 45 100% 60%; /* NEW Bright Gold/Yellow - Adjusted lightness for better visibility */
-    --primary-foreground: 240 60% 10%; /* Dark Blue (for text on primary buttons), adjusted for contrast */
+    --primary: 45 100% 60%; /* Bright Gold/Yellow */
+    --primary-foreground: 240 60% 10%;
     
-    --secondary: 270 80% 70%; /* Cosmic Purple */
-    --secondary-foreground: 240 20% 95%; /* Light Cool White/Blue */
+    --secondary: 120 40% 50%; /* Green for subheadings */
+    --secondary-foreground: 240 20% 95%;
     
     --accent: 200 100% 70%; /* Bright Celestial Blue */
-    --accent-foreground: 240 60% 5%; /* Dark Blue */
+    --accent-foreground: 240 60% 5%;
     
-    --muted: 240 40% 20%; /* Muted Dark Blue */
-    --muted-foreground: 240 20% 75%; /* Muted Cool White/Blue */
+    --muted: 240 40% 20%;
+    --muted-foreground: 240 20% 75%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 240 50% 25%; /* Slightly lighter border for better visibility on dark cards */
+    --border: 240 50% 25%;
     --input: 240 50% 25%;
-    --ring: 45 100% 60%; /* Gold/Yellow for focus rings to match primary */
+    --ring: 45 100% 60%;
     
     --radius: 0.75rem;
 
@@ -77,13 +79,30 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-merriweather), serif;
+    font-family: 'Poppins', sans-serif;
     @apply transition-colors duration-300 ease-in-out;
   }
   h1, h2, h3, h4, h5, h6 {
+    @apply text-primary font-semibold;
+    font-family: 'Poppins', sans-serif;
+  }
+  .content-header {
+    @apply text-primary font-semibold;
+    font-family: 'Poppins', sans-serif;
+  }
+  .content-body {
     @apply text-foreground;
-    font-family: var(--font-cinzel), serif;
-    @apply font-semibold;
+    font-family: 'Poppins', sans-serif;
+  }
+  .content-subheading {
+    @apply text-secondary font-medium;
+    font-family: 'Poppins', sans-serif;
+  }
+  .card-content {
+    @apply max-h-[70vh] overflow-y-auto;
+  }
+  .close-button {
+    @apply absolute top-2 right-2 p-2 rounded-full hover:bg-muted/20 transition-colors;
   }
   a {
     @apply text-primary hover:text-[hsl(var(--primary)/0.8)] transition-colors;

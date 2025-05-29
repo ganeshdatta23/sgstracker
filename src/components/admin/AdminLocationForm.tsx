@@ -98,7 +98,7 @@ export default function AdminLocationForm() {
                 <FormItem>
                   <FormLabel htmlFor="addressName">Location Name (Optional)</FormLabel>
                   <FormControl>
-                    <Input id="addressName" placeholder="e.g., Ananda Ashram, California" {...field} />
+                    <Input id="addressName" placeholder="e.g., SGS Ashram, Mysuru" {...field} />
                   </FormControl>
                   <FormDescription>A human-readable name for the location.</FormDescription>
                   <FormMessage />

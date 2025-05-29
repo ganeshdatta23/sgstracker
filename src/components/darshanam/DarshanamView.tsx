@@ -26,6 +26,7 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { CompassView } from '@/components/compass/CompassView';
 
 const ALIGNMENT_THRESHOLD = 15; // Increased to 20 degrees on each side
 const FACING_THRESHOLD_DEGREES = ALIGNMENT_THRESHOLD;
@@ -41,6 +42,16 @@ function getCardinalDirection(angle: number | null): string {
   const index = Math.round(angle / 22.5) % 16;
   return directions[index];
 }
+
+// Add this CSS at the top of the file, after the imports
+const glowingImageStyle = {
+  filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.5))',
+  animation: 'glow 2s ease-in-out infinite'
+};
+
+const flashingMessageStyle = {
+  animation: 'flashAndElevate 3s ease-in-out infinite'
+};
 
 export default function DarshanamView() {
   const router = useRouter();
@@ -482,9 +493,9 @@ export default function DarshanamView() {
               src="/images/swamiji-darshan.png"
               alt="Sadguru Darshanam"
               layout="fill"
-              style={{ objectFit: "contain", transform: 'scale(0.7)' }} // Reduced size to 70%
+              style={{ ...glowingImageStyle, objectFit: "contain", transform: 'scale(0.7)' }} // Reduced size to 70%
               priority
-              className="max-w-full max-h-full"
+              className="max-w-full max-h-full opacity-90 group-hover:opacity-100 transition-opacity"
             />
           </div>
           {/* Darshan Audio */}
@@ -520,10 +531,11 @@ export default function DarshanamView() {
                 </Button>
             </div> */}
 
-          {/* Optional: Message or blessing text over Darshan image */}
-          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[15] p-4 bg-black/40 rounded-lg max-w-md text-center backdrop-blur-sm">
-            <p className="text-sm sm:text-base text-gray-200 line-clamp-2">
-              Pujya Sri Swamiji's Darshan Aligned.
+          {/* Spiritual Message with Animations */}
+          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[15] w-11/12 max-w-md p-4 bg-black/50 rounded-2xl text-center backdrop-blur-md border-2 border-yellow-300 shadow-2xl shadow-yellow-200 animate-fadeIn">
+            <p className="text-xl sm:text-2xl font-extrabold text-yellow-300 animate-glow tracking-wide">
+              <span className="block animate-slideIn delay-[200ms]">✨ Hold Steady!</span>
+              <span className="block text-yellow-100 text-base sm:text-lg font-medium animate-slideIn delay-[800ms]">🌟 Appaji's Direction is Aligned</span>
             </p>
           </div>
         </div>
@@ -534,35 +546,13 @@ export default function DarshanamView() {
           <div className="stars-layer2"></div>
           <div className="stars-layer3"></div>
 
-          {/* New Compass Visual */}
-          <div className="compass">
-            <div className="arrow" />
-            <div
-              className="compass-circle"
-              style={{
-                transform: `translate(-50%, -50%) rotate(${deviceHeading !== null ? -deviceHeading : 0}deg)`
-              }}
-            />
-            <div
-              className="swamiji-point"
-              style={{
-                opacity: bearingToSwamiji !== null && deviceHeading !== null &&
-                  Math.min(
-                    Math.abs(bearingToSwamiji - deviceHeading),
-                    360 - Math.abs(bearingToSwamiji - deviceHeading)
-                  ) <= FACING_THRESHOLD_DEGREES ? 1 : 0
-              }}
-            />
-            {/* Digital Readout for Device Heading */}
-            <div className="absolute -top-20 left-1/2 -translate-x-1/2 text-center pointer-events-auto bg-black/60 p-3 rounded-lg backdrop-blur-sm z-20 w-40">
-              <p className="text-4xl font-bold tabular-nums text-primary">
-                {deviceHeading !== null ? `${deviceHeading.toFixed(0)}°` : "--°"}
-              </p>
-              <p className="text-lg text-foreground/90">
-                {getCardinalDirection(deviceHeading)}
-              </p>
-            </div>
-          </div>
+          {/* Use the new CompassView component */}
+          <CompassView 
+            heading={deviceHeading} 
+            targetHeading={bearingToSwamiji} 
+            // isCalibrating={someCalibrationFlagFromDarshanamView} // Optional
+            // showTiltWarning={someTiltFlagFromDarshanamView}      // Optional
+          />
 
           {/* Instructions and Sloka Button */}
           <div className="flex flex-col items-center gap-4 mt-[15vh]"> {/* Adjusted margin to move everything up */}
@@ -616,6 +606,62 @@ export default function DarshanamView() {
           </div>
         </div>
       )}
+      {/* Moved style tag here */}
+      <style jsx global>{`
+        @keyframes glow {
+          0%, 100% {
+            text-shadow: 0 0 20px rgba(253, 224, 71, 0.7),
+                        0 0 40px rgba(253, 224, 71, 0.5);
+          }
+          50% {
+            text-shadow: 0 0 30px rgba(253, 224, 71, 0.9),
+                        0 0 50px rgba(253, 224, 71, 0.7);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translate(-50%, 20px);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+        }
+
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-glow {
+          animation: glow 2s ease-in-out infinite;
+        }
+
+        .animate-fadeIn {
+          animation: fadeIn 1s ease-out forwards;
+        }
+
+        .animate-slideIn {
+          opacity: 0;
+          animation: slideIn 0.8s ease-out forwards;
+        }
+
+        .delay-\[200ms\] {
+          animation-delay: 200ms;
+        }
+
+        .delay-\[800ms\] {
+          animation-delay: 800ms;
+        }
+      `}</style>
     </div>
   );
 }
