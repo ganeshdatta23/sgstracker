@@ -476,7 +476,7 @@ export default function DarshanamView() {
         }}
       />
       {showDarshan ? (
-        <div id="darshan-view-container" className="relative w-full h-full flex flex-col items-center justify-center">
+        <div id="darshan-view-container" className="relative w-full h-full flex flex-col items-center justify-start">
           {/* Background Video */}
           <video
             className="absolute inset-0 w-full h-full object-cover z-0"
@@ -488,12 +488,12 @@ export default function DarshanamView() {
             preload="auto"
           />
           {/* Darshan Image - Centered on top of video */}
-          <div className="relative z-10 w-full h-full flex items-center justify-center">
+          <div className="relative z-10 w-full h-full flex items-start justify-center">
             <Image 
               src="/images/swamiji-darshan.png"
               alt="Sadguru Darshanam"
               layout="fill"
-              style={{ ...glowingImageStyle, objectFit: "contain", transform: 'scale(0.7)' }} // Reduced size to 70%
+              style={{ ...glowingImageStyle, objectFit: "contain", objectPosition: 'center top', transform: 'scale(0.70)' }} // Reduced size and aligned top
               priority
               className="max-w-full max-h-full opacity-90 group-hover:opacity-100 transition-opacity"
             />

@@ -49,44 +49,27 @@ export default function PersonalizedGreeting({ locationName }: Props) {
   <Card
     className="w-full h-[300px] relative rounded-xl overflow-hidden bg-black/5"
   >
-    {/* Background Image */}
-    <div
-      className="absolute inset-0 bg-cover bg-center"
-      style={{
-        backgroundImage: "url('/images/dattapeetham_7e154e37ea24615612494ddffa91e134.jpg')",
-      }}
-    ></div>
-
-    {/* Location and Time Overlay */}
-    <div className="absolute top-2 right-2 bg-black/40 backdrop-blur-sm p-2.5 rounded-lg text-white border border-[#FFD700]/30 shadow-lg" style={{ maxWidth: '200px' }}>
-      <p className="text-xs font-medium" style={{ 
-        fontFamily: 'Poppins, sans-serif',
-        color: '#FFD700' // Gold color for the header
-      }}>
-        Pujya Appaji at: <br /> 
-        <span className="text-white/90">{locationName}</span>
-      </p>
-      <p className="text-xs mt-1" style={{ 
-        fontFamily: 'Poppins, sans-serif',
-        color: '#FFD700' // Gold color for the header
-      }}>
-        Time: <span className="text-white/90">
-          {new Date().toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            hour12: false,
-            timeZone: 'Asia/Kolkata'
-          })} IST
-        </span>
-      </p>
+    {/* YouTube Video Background */}
+    <div className="absolute inset-0 w-full h-full">
+      <iframe
+        src="https://www.youtube.com/embed/bHNE4_f5PXQ?autoplay=1&controls=1&loop=1&playlist=bHNE4_f5PXQ"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        className="w-full h-full"
+        style={{ border: 'none' }}
+        title="Pujya Appaji Video"
+      />
     </div>
 
+    {/* Semi-transparent overlay for text areas only */}
+    <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-black/50 to-transparent"></div>
+    <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/50 to-transparent"></div>
+
     {/* Blurred Banner at Bottom */}
-    <div className="absolute bottom-0 w-full bg-black/30 backdrop-blur-sm p-2 text-center">
+    {/* <div className="absolute bottom-0 w-full bg-black/30 backdrop-blur-sm p-2 text-center">
       <p className="text-sm font-medium" style={{ color: "gold", fontFamily: 'Poppins, sans-serif' }}>
         {currentMessage}
       </p>
-    </div>
+    </div> */}
   </Card>
   );
 }

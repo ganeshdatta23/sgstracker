@@ -97,7 +97,7 @@ export default function ResponsiveDrawer({
             fontFamily: 'Poppins, sans-serif'
           }}>
             <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><Compass /></ListItemIcon>
-            <ListItemText primary="Dash Board" sx={{ 
+            <ListItemText primary="Live Info" sx={{ 
               color: 'hsl(var(--foreground))', 
               fontWeight: 500,
               '.MuiTypography-root': { fontFamily: 'Poppins, sans-serif' }
@@ -113,7 +113,7 @@ export default function ResponsiveDrawer({
             fontFamily: 'Poppins, sans-serif'
           }}>
             <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><BookOpen /></ListItemIcon>
-            <ListItemText primary="Sacred Slokas" sx={{ 
+            <ListItemText primary="Dhyana Slokas" sx={{ 
               color: 'hsl(var(--foreground))', 
               fontWeight: 500,
               '.MuiTypography-root': { fontFamily: 'Poppins, sans-serif' }
@@ -203,7 +203,7 @@ export default function ResponsiveDrawer({
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ color: 'hsl(var(--primary))', fontWeight: 'bold', flexGrow: 1 }}> {/* Use primary for title */}
-            GuruDarshini
+            PROJECTNINE
           </Typography>
         </Toolbar>
       </AppBar>
@@ -279,10 +279,7 @@ export default function ResponsiveDrawer({
         }}
       >
         <Typography variant="caption" align="center" display="block" /* sx={{color: 'grey.500'}} REMOVED, using theme */ >
-          © {new Date().getFullYear()} GuruDarshini. All rights reserved.
-        </Typography>
-        <Typography variant="caption" align="center" display="block" /* sx={{color: 'grey.500'}} REMOVED, using theme */ >
-          <Link href="mailto:dattadev.sgs@gmail.com">dattadev.sgs@gmail.com</Link>
+          © {new Date().getFullYear()} PROJECTNINE. All rights reserved.
         </Typography>
       </Box>
     </Box>

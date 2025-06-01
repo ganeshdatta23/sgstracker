@@ -100,40 +100,81 @@ export default function HomePage() {
   ];
 
   const userGuideContent = [
+    "**PROJECTNINE User Guide**",
+    "Experience seamless directional guidance to connect with Pujya Appaji wherever you are.",
+    "",
     "**Getting Started**",
-    "1. **Location Services**: Enable your device's location services and grant permissions when prompted to use the direction features.",
-    "2. **Compass Calibration**: For accurate direction finding, calibrate your device's compass by moving your phone in a figure-8 pattern.",
-    "3. **Browser Permissions**: Allow browser permissions for location access when requested.",
-    
+    "To begin using PROJECTNINE, follow these initial setup steps:",
+    "",
+    "**Enable Location Services**",
+    "Turn on your device's location services and grant permission when prompted to access location features.",
+    "",
+    "**Calibrate Your Compass**",
+    "For accurate direction finding, move your phone in a figure-8 motion to calibrate the compass.",
+    "",
+    "**Allow Browser Location Access**",
+    "When asked, allow your browser to access your location for real-time tracking and direction.",
+    "",
+    "Recommended: Use Google Chrome for the best experience and compatibility across devices.",
+    "",
     "**Main Features**",
     "• **Guru Connect**: Shows Pujya Appaji's current location, your location, distance, and direction.",
     "• **Direction Finding**: Displays the exact bearing (in degrees) to face towards Pujya Appaji's location.",
     "• **Distance Calculation**: Shows the distance between your location and Pujya Appaji's location in kilometers.",
     "• **Time Zone**: Displays local time and IST time difference.",
-    
+    "",
     "**Technical Notes**",
-    "• The app uses GPS and device compass for location tracking",
-    "• Location accuracy depends on your device's GPS signal strength",
-    "• For best results, use the app in open areas away from large metal objects",
-    "• The app automatically refreshes location data periodically",
-    
+    "PROJECTNINE uses GPS and your device’s digital compass for accurate location and direction.",
+    "",
+    "Accuracy may vary based on:",
+    "  • GPS signal strength",
+    "  • Magnetic interference from nearby metal objects",
+    "",
+    "The app auto-refreshes location data periodically to ensure up-to-date information.",
+    "",
     "**Troubleshooting**",
-    "• If location is not updating, check your device's location settings",
-    "• For compass issues, try recalibrating your device",
-    "• Clear browser cache if you experience data loading issues",
-    "• Ensure stable internet connection for real-time updates",
-    
+    "If you're experiencing issues:",
+    "",
+    "**Location Not Updating**",
+    "→ Ensure location services are turned on in your device settings.",
+    "",
+    "**Compass Not Pointing Correctly**",
+    "→ Recalibrate your device by moving it in a figure-8 motion.",
+    "",
+    "**Data Not Loading**",
+    "→ Clear your browser cache and refresh the page.",
+    "",
+    "**Slow or Inaccurate Updates**",
+    "→ Make sure you're connected to a stable internet network.",
+    "",
     "**Device Compatibility**",
     "• Works on most modern browsers (Chrome, Safari, Firefox, Edge)",
     "• Requires HTML5 geolocation support",
     "• Compass features work best on mobile devices",
-    "• Supports both portrait and landscape orientations"
+    "• Supports both portrait and landscape orientations",
+    "",
+    "**Add to Home Screen (Web App Installation)**",
+    "For quick access, you can install PROJECTNINE on your home screen like a native app:",
+    "",
+    "**For Android (Chrome Browser)**",
+    "1. Open PROJECTNINE in Google Chrome.",
+    "2. Tap the menu icon (three dots in the top right).",
+    "3. Select \"Add to Home screen\".",
+    "4. Tap \"Add\" again in the popup confirmation.",
+    "5. The app icon will now appear on your home screen and open in full-screen mode.",
+    "",
+    "**For iPhone (Safari Browser)**",
+    "1. Open PROJECTNINE in Safari.",
+    "2. Tap the Share icon (square with an arrow pointing up).",
+    "3. Scroll and tap \"Add to Home Screen\".",
+    "4. Tap \"Add\" in the top-right corner.",
+    "5. The app will be available on your home screen just like a native app."
   ];
   
   // Updated content for BalaSwamiji's Blessings card (back side)
   const balaswamijiAnugrahaBhashanam = [
     "The Guru Gita teaches that one should offer reverential prostrations in the direction of sacred places such as Kashi, Gaya, etc. Similarly, wherever our Sadguru, Pujya Sri Appaji, resides or travels, we should bow in that direction with deep devotion and faith. It is to be understood that our Sadguru is ever-present with us, guiding and protecting us at all times. We must hold the unwavering conviction that our Sadguru is none other than Lord Śrīnātha Himself.",
-    "~ Guru Gita Discourse on Chaturmasya Deeksha at 2004"
+    "~ Guru Gita Discourse During First Chaturmasya Vrata Deeksha, Mysuru 2004"
   ];
   
   
@@ -245,7 +286,7 @@ export default function HomePage() {
       <div className="flex items-center justify-center min-h-screen text-foreground p-4 bg-[#0C0A09]" onClick={handleUserInteraction}>
         <div className="flex flex-col items-center gap-4">
           <Sparkles className="w-12 h-12 animate-pulse text-primary" />
-          <p className="text-lg">Loading Guru\'s Grace...</p>
+          <p className="text-lg">Loading...</p>
         </div>
       </div>
     );
@@ -278,10 +319,10 @@ export default function HomePage() {
       onGuideClick={handleOpenGuide}
     >
       <div className="container sm:mx-auto px-0" onClick={handleUserInteraction}>
-      <audio ref={backgroundAudioRef} src="/audio/SpotiDownloader (mp3cut.net).mp3" loop preload="auto" />
+      {/* <audio ref={backgroundAudioRef} src="/audio/SpotiDownloader (mp3cut.net).mp3" loop preload="auto" /> */}
 
         <div className="fixed bottom-20 right-5 z-50 flex items-center gap-3">
-        <Button 
+        {/* <Button 
           variant="outline" 
             size="icon" 
           onClick={toggleBackgroundAudio}
@@ -292,16 +333,16 @@ export default function HomePage() {
             <Volume2 className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" /> : 
             <VolumeX className="h-5 w-5 text-muted-foreground group-hover:scale-110 transition-transform" />
           }
-        </Button> 
+        </Button>  */}
       </div>
         
         <Dialog open={isGuruConnectModalOpen} onOpenChange={setIsGuruConnectModalOpen}>
           <DialogContent className="sm:max-w-lg bg-card border-border smooth-all">
             <DialogHeader>
-              <DialogTitleComponent className="content-header">Guru Connect</DialogTitleComponent>
-              <DialogDescriptionComponent className="content-subheading">
-                Locate Appaji and find your bearing.
-              </DialogDescriptionComponent>
+              <DialogTitleComponent className="content-header">Live Info</DialogTitleComponent>
+              {/* <DialogDescriptionComponent className="content-subheading">
+                Current Time & Location Details
+              </DialogDescriptionComponent> */}
             </DialogHeader>
             <button 
               onClick={() => setIsGuruConnectModalOpen(false)}
@@ -311,19 +352,7 @@ export default function HomePage() {
               <X className="h-4 w-4 text-muted-foreground" />
             </button>
             <ScrollArea className="card-content">
-              <Accordion type="single" collapsible className="w-full" onValueChange={handleAccordionChange} value={accordionValue} defaultValue="dashboard-item">
-                <AccordionItem value="dashboard-item" className="border-b-0 px-2">
-                <AccordionTrigger className="text-base hover:no-underline focus:no-underline text-foreground/90 py-3">
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      {accordionValue === "dashboard-item" ? 
-                        <ChevronUp className="mr-2 h-5 w-5 text-accent"/> : 
-                        <ChevronDown className="mr-2 h-5 w-5 text-accent" />}                     
-                      <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>
-                    Direction to Sadguru
-                      </Typography>
-                    </Box>
-                </AccordionTrigger>
-                  <AccordionContent className="pt-2 pb-1 space-y-3 text-xs sm:text-sm">
+                <Box className="pt-2 pb-1 space-y-4 text-xs sm:text-sm px-2">
                   {!userGeoLocation && !isFetchingUserLocation && (
                         <Button 
                           onClick={fetchUserLocation} 
@@ -341,43 +370,27 @@ export default function HomePage() {
                         <AlertDesc>{userGeoLocationError}</AlertDesc>
                     </Alert>
                   )}
-                  {userGeoLocation && (
-                      <Box sx={{ p: 1.5, bgcolor: 'background.paper', borderRadius: 1 }}>
-                        <Typography variant="subtitle2" sx={{ color: 'primary.main', mb: 0.5, fontWeight: 'medium' }}>Your Location:</Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                          Coordinates: {userGeoLocation.latitude.toFixed(3)}, {userGeoLocation.longitude.toFixed(3)}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-                          Local Time: {new Date().toLocaleTimeString('en-US', { 
-                            hour: '2-digit', 
-                            minute: '2-digit',
-                            hour12: false,
-                            timeZoneName: 'short'
-                          })}
-                        </Typography>
-                      </Box>
-                    )}
-                    <Box sx={{ p: 1.5, bgcolor: 'background.paper', borderRadius: 1 }}>
-                      <Typography variant="subtitle2" sx={{ color: 'primary.main', mb: 0.5, fontWeight: 'medium' }}>Pujya Appaji's Location:</Typography>
+                  <Box sx={{ p: 2, bgcolor: 'rgba(255, 255, 255, 0.05)', borderRadius: 2, border: '1px solid rgba(255, 215, 0, 0.2)' }}>
+                      <Typography variant="subtitle1" sx={{ color: 'hsl(var(--primary))', mb: 1, fontWeight: 'bold' }}>Appaji's Current Location & Time</Typography>
                       {swamijiLocationLoading && <Skeleton className="h-8 w-3/4 rounded-md" />}
                       {swamijiLocationError && <Typography variant="caption" sx={{color: 'error.main'}}>Error loading Appaji's location.</Typography>}
                       {locationData && (
                         <>
-                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                            Address: {locationData.address || 'Not available'}
+                          <Typography variant="body1" sx={{ color: 'hsl(var(--foreground))', fontWeight: 'medium' }}>
+                            Location: {locationData.address || 'Not available'}
                           </Typography>
-                          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                          {/* <Typography variant="body1" sx={{ color: 'hsl(var(--foreground))', mt: 0.5 }}>
                             Coordinates: {locationData.latitude.toFixed(3)}, {locationData.longitude.toFixed(3)}
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-                            IST Time: {new Date().toLocaleTimeString('en-US', { 
+                          </Typography> */}
+                          <Typography variant="body2" sx={{ color: 'white', mt: 0.5 ,fontWeight: 'bold'}}>
+                            Local Time: {new Date().toLocaleTimeString('en-US', { 
                               hour: '2-digit', 
                               minute: '2-digit',
                               hour12: false,
                               timeZone: 'Asia/Kolkata'
                             })} IST
                           </Typography>
-                          <Typography variant="caption" sx={{ color: 'text.disabled', mt: 0.5 }} display="block">
+                          <Typography variant="caption" sx={{ color: 'hsl(var(--muted-foreground))', mt: 1 }} display="block">
                             Last Updated: {format(new Date(locationData.updatedAt), 'PPp')}
                           </Typography>
                         </>
@@ -388,33 +401,48 @@ export default function HomePage() {
                         </Typography>
                       }
                     </Box>
+                  
                     {userGeoLocation && locationData && bearingToSwamiji !== null && (
-                      <Box sx={{ p: 1.5, bgcolor: 'primary.dark', borderRadius: 1, color: 'primary.contrastText' }}>
-                        <Typography variant="subtitle2" sx={{ color: 'primary.light', mb: 0.5, fontWeight: 'bold' }}>Connection Details:</Typography>
+                      <Box sx={{ p: 2, bgcolor: 'rgba(255, 255, 255, 0.05)', borderRadius: 2, border: '1px solid rgba(255, 215, 0, 0.2)', color: 'hsl(var(--foreground))' }}>
+                        <Typography variant="subtitle1" sx={{ color: 'hsl(var(--primary))', mb: 1, fontWeight: 'bold' }}>Distance & Direction</Typography>
                         <Box sx={{display: 'flex', alignItems: 'center', mb: 1}}>
-                          <Compass className="mr-1 h-4 w-4" /> 
-                          <Typography variant="body2">
-                            Direction: <Typography component="b" sx={{fontWeight: 'bold', mx: 0.5}}>
+                          <Compass className="mr-2 h-5 w-5 text-primary" /> 
+                          <Typography variant="body1">
+                            Direction: <Typography component="span" sx={{fontWeight: 'bold', color: 'white'}}>
                               {bearingToSwamiji.toFixed(0)}°
                             </Typography> from North
                           </Typography>
                         </Box>
-                        <Typography variant="body2" sx={{ mt: 0.5 }}>
+                        <Typography variant="body1" sx={{ mt: 1 }}>
                           Distance: {calculateDistance(
                             userGeoLocation.latitude,
                             userGeoLocation.longitude,
                             locationData.latitude,
                             locationData.longitude
-                          ).toFixed(1)} km
+                          ).toFixed(1)} km away
                         </Typography>
-                        <Typography variant="body2" sx={{ mt: 0.5 }}>
+                        <Typography variant="body1" sx={{ mt: 0.5 }}>
                           Time Difference: {calculateTimeDifference().toFixed(2)} hours
                         </Typography>
                       </Box>
                     )}
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                    {userGeoLocation && (
+                      <Box sx={{ p: 2, bgcolor: 'rgba(255, 255, 255, 0.05)', borderRadius: 2, border: '1px solid rgba(255, 215, 0, 0.2)' }}>
+                        <Typography variant="subtitle1" sx={{ color: 'hsl(var(--primary))', mb: 1, fontWeight: 'bold' }}>Your Current Location</Typography>
+                        <Typography variant="body1" sx={{ color: 'hsl(var(--foreground))' }}>
+                          Coordinates: {userGeoLocation.latitude.toFixed(3)}, {userGeoLocation.longitude.toFixed(3)}
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: 'white', mt: 0.5 }}>
+                          Local Time: {new Date().toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit',
+                            hour12: false,
+                            timeZoneName: 'short'
+                          })}
+                        </Typography>
+                      </Box>
+                    )}
+                </Box>
             </ScrollArea>
           </DialogContent>
         </Dialog>
@@ -424,7 +452,7 @@ export default function HomePage() {
             <DialogHeader>
               <DialogTitleComponent className="content-header">About</DialogTitleComponent>
               <DialogDescriptionComponent className="content-subheading">
-                Important information about GuruDarshini.
+                Important information about PROJECTNINE.
               </DialogDescriptionComponent>
             </DialogHeader>
             <button 
@@ -440,7 +468,7 @@ export default function HomePage() {
                   Jaya Guru Datta
                 </Typography>
                 <Typography variant="body1" paragraph sx={{ mb: 1.5, color: 'white' }}>
-                  GuruDarshini is a humble tool designed for Datta devotees to offer daily pranāms (obeisance) to Pujya Sri Appaji, as instructed in the Guru Gītā in the direction of Pujya Appaji's current location.
+                  PROJECTNINE is a humble tool designed for Datta devotees to offer daily pranāms (obeisance) to Pujya Sri Appaji, as instructed in the Guru Gītā in the direction of Pujya Appaji's current location.
                 </Typography>
                 <Box sx={{ borderLeft: 4, borderColor: 'primary.light', pl: 2, my: 2, fontStyle: 'italic', bgcolor: 'action.hover' }}>
                   <Typography variant="body2" component="blockquote" sx={{ color: 'gold' }}>
@@ -478,10 +506,10 @@ export default function HomePage() {
       <Dialog open={isSlokaModalOpen} onOpenChange={setIsSlokaModalOpen}>
           <DialogContent className="sm:max-w-lg bg-card border-border smooth-all">
             <DialogHeader>
-              <DialogTitleComponent className="content-header">Sacred Slokas</DialogTitleComponent>
-              <DialogDescriptionComponent className="content-subheading">
+              <DialogTitleComponent className="content-header">Dhyana Slokas</DialogTitleComponent>
+              {/* <DialogDescriptionComponent className="content-subheading">
                 Divine verses for spiritual elevation.
-              </DialogDescriptionComponent>
+              </DialogDescriptionComponent> */}
             </DialogHeader>
             <button 
               onClick={() => setIsSlokaModalOpen(false)}
@@ -625,7 +653,7 @@ export default function HomePage() {
             <DialogHeader>
               <DialogTitleComponent className="content-header">User Guide</DialogTitleComponent>
               <DialogDescriptionComponent className="content-subheading">
-                Learn how to use GuruDarshini effectively.
+                Learn how to use PROJECTNINE effectively.
               </DialogDescriptionComponent>
             </DialogHeader>
             <button 

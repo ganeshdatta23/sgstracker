@@ -124,7 +124,7 @@ export default function HomePage() {
   if (!isClient) {
     return (
       <div className="fixed inset-0 bg-background z-[200] flex items-center justify-center">
-        <p className="text-foreground">Initializing GuruDarshini...</p>
+        <p className="text-foreground">Initializing PROJECTNINE...</p>
       </div>
     );
   }
@@ -142,7 +142,7 @@ export default function HomePage() {
       <div className="space-y-8 py-8">
         <PersonalizedGreeting locationName={locationNameForGreeting} />
 
-        <h1 className="text-4xl font-bold text-center text-primary">Welcome to GuruDarshini</h1>
+        <h1 className="text-4xl font-bold text-center text-primary">Welcome to PROJECTNINE</h1>
         <p className="text-lg text-center text-muted-foreground mb-12">
           Your companion for spiritual connection and guidance.
         </p>
