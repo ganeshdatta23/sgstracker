@@ -231,16 +231,42 @@ const SwamijiDirectionAR: React.FC<SwamijiDirectionARProps> = ({
     },
     darshanImage: {
       position: 'absolute' as 'absolute',
-      top: '50%',
+      top: '55%',
       left: '50%',
-      width: '50%',
-      height: '50%', // Adjust as needed
+      width: '65%',
+      height: '65%',
       maxWidth: '500px',
       maxHeight: '500px',
-      objectPosition: 'center%',
+      objectPosition: 'center',
       objectFit: 'contain' as 'contain',
       transform: 'translate(-50%, -50%)',
       zIndex: 2,
+    },
+    darshanMessage: {
+      position: 'absolute' as 'absolute',
+      top: '18%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      color: '#FFD700',
+      padding: '6px 12px',
+      borderRadius: '20px',
+      zIndex: 3,
+      fontSize: '16px',
+      fontWeight: 'bold',
+      textAlign: 'center' as 'center',
+    },
+    holdOnMessage: {
+      position: 'absolute' as 'absolute',
+      bottom: '10%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      color: 'white',
+      padding: '10px 20px',
+      borderRadius: '5px',
+      zIndex: 3,
+      fontSize: '16px',
     },
     calibrationText: {
         marginTop: '20px',
@@ -299,6 +325,9 @@ const SwamijiDirectionAR: React.FC<SwamijiDirectionARProps> = ({
           alt="Swamiji Darshan"
           style={styles.darshanImage}
         />
+        <Typography sx={styles.darshanMessage}>
+          Hold Steady!
+        </Typography>
       </Box>
     );
   }
@@ -332,6 +361,9 @@ const SwamijiDirectionAR: React.FC<SwamijiDirectionARProps> = ({
         {currentHeading === null ? "Calibrating compass..." : "Align with Swamiji's Direction"}
         <br />
         Move device in a figure-eight motion if needed.
+      </Typography>
+      <Typography sx={styles.holdOnMessage}>
+        Point your device towards the indicated direction to see Swamiji.
       </Typography>
     </CompassContainer>
   );
