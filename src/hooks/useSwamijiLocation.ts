@@ -41,31 +41,47 @@ export function useSwamijiLocation() {
   }, []);
 
   const fetchLocation = async () => {
+    setLoading(true);
+    setError(null);
+    console.log(`${LOG_PREFIX} Starting fetchLocation...`);
     try {
-      const { data, error: supabaseError } = await supabase
+      const { data, error: supabaseError, status, count } = await supabase
         .from('locations')
-        .select('*')
+        .select('*', { count: 'exact' })
         .eq('id', 'swamiji_location')
         .single();
 
-      if (supabaseError) throw supabaseError;
+      console.log(`${LOG_PREFIX} Supabase response:`, { status, supabaseError, data, count });
 
-      if (data) {
-        console.log(`${LOG_PREFIX} Data received from Supabase:`, data);
+      if (supabaseError) {
+        if (status === 406 || supabaseError.code === 'PGRST116') {
+          console.warn(`${LOG_PREFIX} No location data found for id 'swamiji_location'. Supabase error:`, supabaseError.message);
+          setLocationData(null);
+        } else {
+          console.error(`${LOG_PREFIX} Supabase error fetching location:`, supabaseError);
+          setError(supabaseError);
+        }
+        setLocationData(null);
+      } else if (data) {
+        console.log(`${LOG_PREFIX} Data successfully received from Supabase for id 'swamiji_location':`, data);
         setLocationData({
           ...data,
+          latitude: parseFloat(data.latitude as any),
+          longitude: parseFloat(data.longitude as any),
           updatedAt: new Date(data.updated_at),
         });
+        setError(null);
       } else {
-        console.warn(`${LOG_PREFIX} No location data found in Supabase.`);
+        console.warn(`${LOG_PREFIX} No data returned from Supabase for id 'swamiji_location', but no explicit error. This is unusual.`);
         setLocationData(null);
       }
-      setError(null);
     } catch (err) {
-      console.error(`${LOG_PREFIX} Error fetching location from Supabase:`, err);
+      console.error(`${LOG_PREFIX} Unexpected error in fetchLocation:`, err);
       setError(err as Error);
+      setLocationData(null);
     } finally {
       setLoading(false);
+      console.log(`${LOG_PREFIX} fetchLocation finished. Loading:`, false);
     }
   };
 

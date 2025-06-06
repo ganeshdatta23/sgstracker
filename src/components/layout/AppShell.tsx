@@ -46,7 +46,7 @@ export default function AppShell({ children }: AppShellProps) {
         {/* 
         {!isDarshanamPage && (
           <footer className="bg-black/60 text-center py-4 text-sm text-foreground border-t border-border relative z-10">
-            <p>&copy; {new Date().getFullYear()} PROJECTNINE. All rights reserved.<br />An ADPT Unofficial App</p>
+            <p>&copy; {new Date().getFullYear()} Sri Guru Dig Vandanam. All rights reserved.<br />An ADPT Unofficial App</p>
           </footer>
         )}
         */}

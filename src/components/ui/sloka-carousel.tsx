@@ -6,7 +6,7 @@ import { Button } from './button';
 import Link from 'next/link';
 import { LucideArrowUpRightSquare } from 'lucide-react';
 
-const slokas = [
+const Shlokas = [
   {
     text: `శ్రీనాథ చరణ ద్వంద్వం యస్యాం దిశి విరాజతే\n తస్యై దిశే నమస్కుర్యాత్ భక్త్యా ప్రతిదినం ప్రియే ॥`,
     language: 'Telugu'
@@ -34,7 +34,7 @@ export function SlokaCarousel() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % slokas.length);
+      setCurrentIndex((prev) => (prev + 1) % Shlokas.length);
     }, 10000);
     return () => clearInterval(timer);
   }, []);
@@ -57,10 +57,10 @@ export function SlokaCarousel() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
           <div className="relative z-10 p-6 min-h-[250px] flex flex-col items-center justify-center text-center transition-opacity duration-1000">
             <pre className="font-['Sanskrit_2003'] text-lg sm:text-xl md:text-2xl leading-relaxed text-white whitespace-pre-line mb-4">
-            <p>{slokas[currentIndex].text.split('\n')[0]}</p>
-            <p>{slokas[currentIndex].text.split('\n')[1]}</p>
+            <p>{Shlokas[currentIndex].text.split('\n')[0]}</p>
+            <p>{Shlokas[currentIndex].text.split('\n')[1]}</p>
             </pre>
-            <p className="text-blue-100/60 text-sm">{slokas[currentIndex].language}</p>
+            <p className="text-blue-100/60 text-sm">{Shlokas[currentIndex].language}</p>
           </div>
         </div>
 
@@ -74,7 +74,7 @@ export function SlokaCarousel() {
       </Card>
 
       <div className="flex justify-center mt-4 space-x-2">
-        {slokas.map((_, index) => (
+        {Shlokas.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}

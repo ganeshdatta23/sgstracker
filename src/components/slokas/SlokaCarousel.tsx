@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const SLOKAS = [
+const Shlokas = [
   {
     text: "गुरुर्ब्रह्मा गुरुर्विष्णुर्गुरुर्देवो महेश्वरः । गुरुः साक्षात् परं ब्रह्म तस्मै श्रीगुरवे नमः ॥",
     translation: "The Guru is Brahma, the Guru is Vishnu, the Guru Deva is Maheswara (Shiva). The Guru is Verily the Para Brahman (Supreme Reality). Salutations to that Guru."
@@ -30,7 +30,7 @@ export default function SlokaCarousel() {
     const interval = setInterval(() => {
       setIsVisible(false);
       setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % SLOKAS.length);
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % Shlokas.length);
         setIsVisible(true);
       }, 500);
     }, ROTATION_INTERVAL);
@@ -41,7 +41,7 @@ export default function SlokaCarousel() {
   const handlePrevious = () => {
     setIsVisible(false);
     setTimeout(() => {
-      setCurrentIndex((prevIndex) => (prevIndex - 1 + SLOKAS.length) % SLOKAS.length);
+      setCurrentIndex((prevIndex) => (prevIndex - 1 + Shlokas.length) % Shlokas.length);
       setIsVisible(true);
     }, 500);
   };
@@ -49,7 +49,7 @@ export default function SlokaCarousel() {
   const handleNext = () => {
     setIsVisible(false);
     setTimeout(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % SLOKAS.length);
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % Shlokas.length);
       setIsVisible(true);
     }, 500);
   };
@@ -90,16 +90,16 @@ export default function SlokaCarousel() {
               lineHeight: 1.8,
             }}
           >
-            {SLOKAS[currentIndex].text}
+            {Shlokas[currentIndex].text}
           </p>
           <p className="text-sm sm:text-base text-muted-foreground italic">
-            {SLOKAS[currentIndex].translation}
+            {Shlokas[currentIndex].translation}
           </p>
         </div>
 
         {/* Dots Indicator */}
         <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2">
-          {SLOKAS.map((_, index) => (
+          {Shlokas.map((_, index) => (
             <div
               key={index}
               className={`h-1.5 rounded-full transition-all duration-300 ${

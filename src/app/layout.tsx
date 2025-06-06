@@ -13,7 +13,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'PROJECTNINE',
+  title: 'Sri Guru Dig Vandanam',
   description:
     "Spiritual companion app to locate Swamiji, get darshan guidance, and experience AR-based viewing.",
   icons: {

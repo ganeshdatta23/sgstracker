@@ -17,7 +17,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import useMediaQuery from '@mui/material/useMediaQuery'; // For responsive design
 import { useTheme } from '@mui/material/styles'; // To access theme breakpoints
-import { Info, BookOpen, Compass, Users, HelpCircle, X } from 'lucide-react'; // Added X
+import { Info, BookOpen, Compass, Users, HelpCircle, X, Bell } from 'lucide-react'; // Added Bell
 import Link from 'next/link'; // Import Link from Next.js
 
 const drawerWidth = 240;
@@ -28,6 +28,7 @@ interface ResponsiveDrawerProps {
   onSlokasClick: () => void;
   onDashboardClick: () => void;
   onGuideClick: () => void;
+  onAlarmClick: () => void; // New prop for alarm click
 }
 
 export default function ResponsiveDrawer({ 
@@ -35,7 +36,8 @@ export default function ResponsiveDrawer({
   onDisclaimerClick, 
   onSlokasClick,
   onDashboardClick,
-  onGuideClick
+  onGuideClick,
+  onAlarmClick // New prop
 }: ResponsiveDrawerProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md')); // md breakpoint (900px) can be adjusted
@@ -114,6 +116,22 @@ export default function ResponsiveDrawer({
           }}>
             <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><BookOpen /></ListItemIcon>
             <ListItemText primary="Dhyana Slokas" sx={{ 
+              color: 'hsl(var(--foreground))', 
+              fontWeight: 500,
+              '.MuiTypography-root': { fontFamily: 'Poppins, sans-serif' }
+            }} />
+          </ListItemButton>
+        </ListItem>
+
+        {/* Alarm Settings */}
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => { onAlarmClick(); if(isMobile) setMobileOpen(false); }} sx={{ 
+            '&:hover': { bgcolor: 'hsla(var(--primary), 0.1)' }, 
+            transition: 'background-color 0.2s ease-in-out',
+            fontFamily: 'Poppins, sans-serif'
+          }}>
+            <ListItemIcon sx={{ color: 'hsl(var(--primary))' }}><Bell /></ListItemIcon>
+            <ListItemText primary="Alarm Settings" sx={{ 
               color: 'hsl(var(--foreground))', 
               fontWeight: 500,
               '.MuiTypography-root': { fontFamily: 'Poppins, sans-serif' }
@@ -203,7 +221,7 @@ export default function ResponsiveDrawer({
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ color: 'hsl(var(--primary))', fontWeight: 'bold', flexGrow: 1 }}> {/* Use primary for title */}
-            PROJECTNINE
+            Sri Guru Dig Vandanam
           </Typography>
         </Toolbar>
       </AppBar>
@@ -279,7 +297,7 @@ export default function ResponsiveDrawer({
         }}
       >
         <Typography variant="caption" align="center" display="block" /* sx={{color: 'grey.500'}} REMOVED, using theme */ >
-          © {new Date().getFullYear()} PROJECTNINE. All rights reserved.
+          © {new Date().getFullYear()} Sri Guru Dig Vandanam. All rights reserved.
         </Typography>
       </Box>
     </Box>

@@ -19,6 +19,8 @@ import Image from 'next/image';
 import { SlokaCarousel } from '@/components/ui/sloka-carousel';
 import ResponsiveDrawer from '@/components/layout/ResponsiveDrawer';
 import { Typography, Box } from '@mui/material';
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 // Dynamically import client components that use browser APIs or Leaflet
 const SwamijiDirectionAR = dynamic(() => import('@/components/SwamijiDirectionAR'), { ssr: false });
@@ -36,6 +38,11 @@ export default function HomePage() {
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
   const [isDisclaimerModalOpen, setIsDisclaimerModalOpen] = useState(false);
   const [isGuruConnectModalOpen, setIsGuruConnectModalOpen] = useState(false);
+  const [isAlarmModalOpen, setIsAlarmModalOpen] = useState(false);
+  const [isGlobalAlarmEnabled, setIsGlobalAlarmEnabled] = useState(false);
+  const [swamijiAlarmEnabled, setSwamijiAlarmEnabled] = useState(false);
+  const [userAlarmEnabled, setUserAlarmEnabled] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState('default');
   const { toast } = useToast();
 
   // State for BalaSwamiji's Blessings Card flip
@@ -100,11 +107,11 @@ export default function HomePage() {
   ];
 
   const userGuideContent = [
-    "**PROJECTNINE User Guide**",
+    "**Sri Guru Dig Vandanam User Guide**",
     "Experience seamless directional guidance to connect with Pujya Appaji wherever you are.",
     "",
     "**Getting Started**",
-    "To begin using PROJECTNINE, follow these initial setup steps:",
+    "To begin using Sri Guru Dig Vandanam, follow these initial setup steps:",
     "",
     "**Enable Location Services**",
     "Turn on your device's location services and grant permission when prompted to access location features.",
@@ -124,7 +131,7 @@ export default function HomePage() {
     "• **Time Zone**: Displays local time and IST time difference.",
     "",
     "**Technical Notes**",
-    "PROJECTNINE uses GPS and your device’s digital compass for accurate location and direction.",
+    "Sri Guru Dig Vandanam uses GPS and your device's digital compass for accurate location and direction.",
     "",
     "Accuracy may vary based on:",
     "  • GPS signal strength",
@@ -154,17 +161,17 @@ export default function HomePage() {
     "• Supports both portrait and landscape orientations",
     "",
     "**Add to Home Screen (Web App Installation)**",
-    "For quick access, you can install PROJECTNINE on your home screen like a native app:",
+    "For quick access, you can install Sri Guru Dig Vandanam on your home screen like a native app:",
     "",
     "**For Android (Chrome Browser)**",
-    "1. Open PROJECTNINE in Google Chrome.",
+    "1. Open Sri Guru Dig Vandanam in Google Chrome.",
     "2. Tap the menu icon (three dots in the top right).",
     "3. Select \"Add to Home screen\".",
     "4. Tap \"Add\" again in the popup confirmation.",
     "5. The app icon will now appear on your home screen and open in full-screen mode.",
     "",
     "**For iPhone (Safari Browser)**",
-    "1. Open PROJECTNINE in Safari.",
+    "1. Open Sri Guru Dig Vandanam in Safari.",
     "2. Tap the Share icon (square with an arrow pointing up).",
     "3. Scroll and tap \"Add to Home Screen\".",
     "4. Tap \"Add\" in the top-right corner.",
@@ -281,6 +288,115 @@ export default function HomePage() {
     handleUserInteraction();
   };
 
+  const handleOpenAlarmSettings = () => {
+    setIsAlarmModalOpen(true);
+    // Check and request notification permission when opening alarm settings
+    if (typeof window !== 'undefined' && typeof Notification !== 'undefined') {
+      setNotificationPermission(Notification.permission);
+      // No need to explicitly request here, the useEffect below will handle it if 'default'
+    }
+    handleUserInteraction();
+  };
+
+  // Effect to request permission if it's default when modal opens or global alarm is toggled
+  useEffect(() => {
+    if (isAlarmModalOpen && typeof window !== 'undefined' && typeof Notification !== 'undefined' && Notification.permission === 'default') {
+      Notification.requestPermission().then(permission => {
+        setNotificationPermission(permission);
+        if (permission === 'denied') {
+          toast({ title: "Notification Permission Denied", description: "Alarms via notifications cannot be shown.", variant: "destructive" });
+          setIsGlobalAlarmEnabled(false); // Disable if denied
+        } else if (permission === 'granted') {
+          toast({ title: "Notification Permission Granted", description: "You can now receive alarm notifications." });
+        }
+      });
+    }
+  }, [isAlarmModalOpen, toast]); // Removed notificationPermission from deps to avoid loop, it's set inside
+
+  // Placeholder for actual alarm triggering logic
+  useEffect(() => {
+    if (!isGlobalAlarmEnabled || typeof window === 'undefined' || typeof Notification === 'undefined') return;
+    let swamijiTimeoutId: NodeJS.Timeout | undefined;
+    let userTimeoutId: NodeJS.Timeout | undefined;
+
+    const showNotification = (title: string, body: string) => {
+      if (Notification.permission === 'granted') {
+        const notificationOptions: NotificationOptions = {
+          body,
+          icon: '/logo.png', // Assuming you have a logo.png in /public
+          requireInteraction: true, // Suggests the notification stays until interacted with
+          // sound: '/audio/alarm-tone.mp3', // This is not standard/well-supported; play audio manually
+        };
+        
+        new Notification(title, notificationOptions);
+
+        // Attempt to play a sound - requires user interaction with the page at some point for autoplay to work
+        // You'll need an actual audio file, e.g., /public/audio/alarm-tone.mp3
+        try {
+          const alarmAudio = new Audio('/audio/alarm-tone.mp3'); // Path relative to /public
+          alarmAudio.play().catch(e => console.warn("Audio play failed (user interaction might be needed, or file missing):", e));
+        } catch (e) {
+          console.error("Error playing notification sound:", e);
+        }
+
+      } else {
+        console.warn('Notification permission not granted. Cannot show alarm.');
+      }
+    };
+
+    if (swamijiAlarmEnabled && locationData) {
+      // SIMULATED: Trigger 1 minute from now for Swamiji
+      const alarmTime = new Date(Date.now() + 1 * 60 * 1000);
+      console.log(`Simulated Swamiji Alarm set for: ${alarmTime.toLocaleTimeString()}`);
+      toast({ title: "Swamiji Alarm (Simulated)", description: `Notification will show at ${alarmTime.toLocaleTimeString()}`});
+      
+      swamijiTimeoutId = setTimeout(() => {
+        showNotification('Pujya Appaji Alarm (Simulated)', 'Time for 5 minutes before Swamiji\'s sunrise (Simulated)');
+      }, alarmTime.getTime() - Date.now());
+    }
+
+    if (userAlarmEnabled && userGeoLocation) {
+      // SIMULATED: Trigger 2 minutes from now for User
+      const alarmTime = new Date(Date.now() + 2 * 60 * 1000);
+      console.log(`Simulated User Alarm set for: ${alarmTime.toLocaleTimeString()}`);
+      toast({ title: "Your Alarm (Simulated)", description: `Notification will show at ${alarmTime.toLocaleTimeString()}`});
+      
+      userTimeoutId = setTimeout(() => {
+        showNotification('Your Alarm (Simulated)', 'Time for 5 minutes before your sunrise (Simulated)');
+      }, alarmTime.getTime() - Date.now());
+    }
+
+    return () => {
+      if (swamijiTimeoutId) clearTimeout(swamijiTimeoutId);
+      if (userTimeoutId) clearTimeout(userTimeoutId);
+    };
+  }, [isGlobalAlarmEnabled, swamijiAlarmEnabled, userAlarmEnabled, locationData, userGeoLocation, notificationPermission, toast]);
+
+  // Handler for the master alarm switch
+  const handleGlobalAlarmToggle = (checked: boolean) => {
+    setIsGlobalAlarmEnabled(checked);
+    if (checked && typeof window !== 'undefined' && typeof Notification !== 'undefined') {
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          setNotificationPermission(permission);
+          if (permission === 'denied') {
+            toast({ title: "Notification Permission Denied", description: "Alarms cannot be enabled.", variant: "destructive" });
+            setIsGlobalAlarmEnabled(false); // Force disable if denied
+          } else if (permission === 'granted') {
+            toast({ title: "Notification Permission Granted", description: "Alarms are now active." });
+          }
+        });
+      } else if (Notification.permission === 'denied') {
+          toast({ title: "Notification Permission Denied", description: "Please enable notifications in browser settings to use alarms.", variant: "destructive" });
+          setIsGlobalAlarmEnabled(false); // Ensure it stays off if permission is denied
+      }
+    }
+    if (!checked) { // If turning off global, turn off individual alarms too
+      setSwamijiAlarmEnabled(false);
+      setUserAlarmEnabled(false);
+    }
+  };
+
   if (swamijiLocationLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen text-foreground p-4 bg-[#0C0A09]" onClick={handleUserInteraction}>
@@ -317,6 +433,7 @@ export default function HomePage() {
       onSlokasClick={handleOpenSlokas}
       onDashboardClick={handleOpenDashboard}
       onGuideClick={handleOpenGuide}
+      onAlarmClick={handleOpenAlarmSettings}
     >
       <div className="container sm:mx-auto px-0" onClick={handleUserInteraction}>
       {/* <audio ref={backgroundAudioRef} src="/audio/SpotiDownloader (mp3cut.net).mp3" loop preload="auto" /> */}
@@ -452,7 +569,7 @@ export default function HomePage() {
             <DialogHeader>
               <DialogTitleComponent className="content-header">About</DialogTitleComponent>
               <DialogDescriptionComponent className="content-subheading">
-                Important information about PROJECTNINE.
+                Important information about Sri Guru Dig Vandanam.
               </DialogDescriptionComponent>
             </DialogHeader>
             <button 
@@ -468,7 +585,7 @@ export default function HomePage() {
                   Jaya Guru Datta
                 </Typography>
                 <Typography variant="body1" paragraph sx={{ mb: 1.5, color: 'white' }}>
-                  PROJECTNINE is a humble tool designed for Datta devotees to offer daily pranāms (obeisance) to Pujya Sri Appaji, as instructed in the Guru Gītā in the direction of Pujya Appaji's current location.
+                  Sri Guru Dig Vandanam is a humble tool designed for Datta devotees to offer daily pranāms (obeisance) to Pujya Sri Appaji, as instructed in the Guru Gītā in the direction of Pujya Appaji's current location.
                 </Typography>
                 <Box sx={{ borderLeft: 4, borderColor: 'primary.light', pl: 2, my: 2, fontStyle: 'italic', bgcolor: 'action.hover' }}>
                   <Typography variant="body2" component="blockquote" sx={{ color: 'gold' }}>
@@ -552,6 +669,104 @@ export default function HomePage() {
                     </Typography>
                   </Box>
               ))}
+              </Box>
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isAlarmModalOpen} onOpenChange={setIsAlarmModalOpen}>
+          <DialogContent className="sm:max-w-lg bg-card border-border smooth-all">
+            <DialogHeader>
+              <DialogTitleComponent className="content-header">Alarm Settings</DialogTitleComponent>
+              <DialogDescriptionComponent className="content-subheading">
+                Configure sunrise notifications (Sunrise times are simulated for now).
+              </DialogDescriptionComponent>
+            </DialogHeader>
+            <button 
+              onClick={() => setIsAlarmModalOpen(false)}
+              className="close-button"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
+            <ScrollArea className="card-content max-h-[400px]">
+              <Box sx={{ py: 2, px: { xs: 1, sm: 2 }, color: 'white' }} className="space-y-6">
+                
+                <div className="flex items-center justify-between p-3 rounded-lg bg-background/30 border border-border/50">
+                  <Label htmlFor="global-alarm-switch" className="text-base font-medium">
+                    Enable Alarm Notifications
+                  </Label>
+                  <Switch 
+                    id="global-alarm-switch" 
+                    checked={isGlobalAlarmEnabled}
+                    onCheckedChange={handleGlobalAlarmToggle} // Use new handler
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted-foreground/30"
+                  />
+                </div>
+
+                {notificationPermission === 'denied' && (
+                    <Alert variant="destructive" className="text-xs">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle className="text-sm">Permission Issue</AlertTitle>
+                        <AlertDesc>Notification permission is denied. Please enable it in your browser/OS settings to use alarms.</AlertDesc>
+                    </Alert>
+                )}
+
+                {isGlobalAlarmEnabled && notificationPermission === 'granted' && (
+                  <>
+                    {/* Swamiji's Location Alarm */}
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-background/30 border border-border/50">
+                      <Label htmlFor="swamiji-alarm-switch" className="text-sm font-normal">
+                        Pujya Appaji Alarm
+                        <Typography variant="caption" display="block" sx={{ color: 'hsl(var(--muted-foreground))'}}>
+                          5 mins before Swamiji's sunrise (Simulated)
+                        </Typography>
+                      </Label>
+                      <Switch 
+                        id="swamiji-alarm-switch" 
+                        checked={swamijiAlarmEnabled}
+                        onCheckedChange={setSwamijiAlarmEnabled}
+                        disabled={!locationData}
+                      />
+                    </div>
+                    {!locationData && (
+                        <Typography variant="caption" sx={{color: 'text.disabled', pl:1}}>
+                          Appaji's location needed for this alarm.
+                        </Typography>
+                    )}
+
+                    {/* User's Location Alarm */}
+                    <div className="flex items-center justify-between p-3 mt-4 rounded-lg bg-background/30 border border-border/50">
+                      <Label htmlFor="user-alarm-switch" className="text-sm font-normal">
+                        Your Location Alarm
+                        <Typography variant="caption" display="block" sx={{ color: 'hsl(var(--muted-foreground))'}}>
+                          5 mins before your sunrise (Simulated)
+                        </Typography>
+                      </Label>
+                      <Switch 
+                        id="user-alarm-switch" 
+                        checked={userAlarmEnabled}
+                        onCheckedChange={setUserAlarmEnabled}
+                        disabled={!userGeoLocation}
+                      />
+                    </div>
+                     {!userGeoLocation && (
+                        <Typography variant="caption" sx={{color: 'text.disabled', pl:1}}>
+                          Your location needed for this alarm. Enable location services.
+                        </Typography>
+                    )}
+                  </>
+                )}
+                {isGlobalAlarmEnabled && notificationPermission === 'default' && (
+                     <Typography variant="body2" sx={{ color: 'hsl(var(--muted-foreground))'}} className="text-center py-4">
+                        Please grant notification permission to activate alarms.
+                    </Typography>
+                )}
+                {!isGlobalAlarmEnabled && notificationPermission !== 'denied' && (
+                    <Typography variant="body2" sx={{ color: 'hsl(var(--muted-foreground))'}} className="text-center py-4">
+                        Alarm notifications are currently disabled.
+                    </Typography>
+                )}
               </Box>
             </ScrollArea>
           </DialogContent>
@@ -653,7 +868,7 @@ export default function HomePage() {
             <DialogHeader>
               <DialogTitleComponent className="content-header">User Guide</DialogTitleComponent>
               <DialogDescriptionComponent className="content-subheading">
-                Learn how to use PROJECTNINE effectively.
+                Learn how to use Sri Guru Dig Vandanam effectively.
               </DialogDescriptionComponent>
             </DialogHeader>
             <button 

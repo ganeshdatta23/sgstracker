@@ -26,6 +26,8 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { CompassView } from '@/components/compass/CompassView';
 
 const ALIGNMENT_THRESHOLD = 15; // Increased to 20 degrees on each side
@@ -444,6 +446,17 @@ export default function DarshanamView() {
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black text-white z-[50]">
+      {/* Sloka Toggle Switch */}
+      <div className="absolute top-4 right-16 z-[70] flex items-center space-x-2 bg-black/30 p-2 rounded-lg backdrop-blur-sm">
+        <Switch
+          id="sloka-toggle"
+          checked={isSlokaPlaying}
+          onCheckedChange={toggleSloka}
+          aria-label="Toggle Sloka"
+        />
+        <Label htmlFor="sloka-toggle" className="text-sm font-medium text-white">Sloka</Label>
+      </div>
+
       {/* Background Music Audio */}
       <audio 
         ref={backgroundAudioRef}
@@ -534,8 +547,8 @@ export default function DarshanamView() {
           {/* Spiritual Message with Animations */}
           <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[15] w-11/12 max-w-md p-4 bg-black/50 rounded-2xl text-center backdrop-blur-md border-2 border-yellow-300 shadow-2xl shadow-yellow-200 animate-fadeIn">
             <p className="text-xl sm:text-2xl font-extrabold text-yellow-300 animate-glow tracking-wide">
-              <span className="block animate-slideIn delay-[200ms]">✨ Hold Steady!</span>
-              <span className="block text-yellow-100 text-base sm:text-lg font-medium animate-slideIn delay-[800ms]">🌟 Appaji's Direction is Aligned</span>
+              <span className="block animate-slideIn delay-[200ms]">✨Appaji's Direction is Aligned✨</span>
+              {/* <span className="block text-yellow-100 text-base sm:text-lg font-medium animate-slideIn delay-[800ms]">🌟 Appaji's Direction is Aligned</span> */}
             </p>
           </div>
         </div>
@@ -556,30 +569,14 @@ export default function DarshanamView() {
 
           {/* Instructions and Sloka Button */}
           <div className="flex flex-col items-center gap-4 mt-[15vh]"> {/* Adjusted margin to move everything up */}
-            <Button
-              onClick={toggleSloka}
-              variant="outline"
-              size="lg"
-              className="bg-black/50 hover:bg-black/75 text-white border border-primary/50 hover:border-primary transition-colors mb-4"
-            >
-              {isSlokaPlaying ? (
-                <>
-                  <Volume2 className="mr-2 h-4 w-4" /> Playing Sloka...
-                </>
-              ) : (
-                <>
-                  <VolumeX className="mr-2 h-4 w-4" /> Click to Listen Sloka
-                </>
-              )}
-            </Button>
             <div className="text-center pointer-events-auto bg-black/60 p-4 rounded-lg backdrop-blur-sm max-w-xs z-10">
               {userGeoLocation && swamijiLocation && bearingToSwamiji !== null && deviceHeading !== null ? (
                 <>
                   <p className="text-base sm:text-lg font-semibold text-primary mb-1">
-                    Align with Sadguru
+                    To Align with Appaji' Direction
                   </p>
                   <p className="text-sm text-foreground/80">
-                    Turn your device until the <span className="text-accent font-semibold">arrow</span> aligns with the <span className="text-red-400 font-semibold">red line</span>.
+                    Turn your device until Appaji appears.
                   </p>
                 </>
               ) : userGeoLocation && swamijiLocation && bearingToSwamiji !== null ? (

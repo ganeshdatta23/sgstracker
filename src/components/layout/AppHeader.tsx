@@ -30,12 +30,12 @@ export default function AppHeader({ locationName }: Props) {
                 Image removed as per request
                 <Image 
                   src="/images/sri-yantra-header-icon.png" 
-                  alt="PROJECTNINE Icon" 
+                  alt="Sri Guru Dig Vandanam Icon" 
                   width={28} 
                   height={28}
                 /> 
               */}
-              <span>PROJECTNINE</span>
+              <span>Sri Guru Dig Vandanam</span>
             </Link>
           </Button>
 

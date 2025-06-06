@@ -1,7 +1,7 @@
 
-# PROJECTNINE App
+# Sri Guru Dig Vandanam App
 
-PROJECTNINE is a spiritual companion app built with Next.js. It helps devotees locate Swamiji’s current location, get directional guidance for darshan, and experience an augmented reality (AR)-like viewing feature.
+Sri Guru Dig Vandanam is a spiritual companion app built with Next.js. It helps devotees locate Swamiji’s current location, get directional guidance for darshan, and experience an augmented reality (AR)-like viewing feature.
 
 ## Core Features:
 
@@ -93,5 +93,5 @@ Replace `your_...` placeholders with your actual configuration values.
     4.  Deploy your application to get a public URL (e.g., `https://your-app.vercel.app`).
     5.  Set up the webhook for your Telegram bot by visiting the following URL in your browser (replace placeholders with YOUR bot token and YOUR deployed app URL):
         `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=https://your-app.vercel.app/api/telegram-webhook`
-    6.  Once set up, the authorized Telegram user can simply share a location to the bot, and Swamiji's location will be updated in the PROJECTNINE app (assuming the backend is configured for this).
+    6.  Once set up, the authorized Telegram user can simply share a location to the bot, and Swamiji's location will be updated in the Sri Guru Dig Vandanam app (assuming the backend is configured for this).
 

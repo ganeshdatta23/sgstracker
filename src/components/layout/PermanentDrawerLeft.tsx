@@ -67,7 +67,7 @@ export default function PermanentDrawerLeft({
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ color: '#FFD700', fontWeight: 'bold' }}>
-            PROJECTNINE
+            Sri Guru Dig Vandanam
           </Typography>
         </Toolbar>
       </AppBar>
