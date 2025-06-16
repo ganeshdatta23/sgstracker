@@ -90,10 +90,124 @@ export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2
   return R * c;
 }
 
+/**
+ * Calculate time difference between user's timezone and IST
+ * @returns Hours difference (positive if user is ahead of IST)
+ */
 export function calculateTimeDifference(): number {
   const userTime = new Date();
   const istTime = new Date(userTime.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
   return (istTime.getTime() - userTime.getTime()) / (1000 * 60 * 60);
+}
+
+/**
+ * Get user's detected timezone
+ * @returns IANA timezone identifier
+ */
+export function getUserTimezone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch (error) {
+    console.warn('Failed to detect timezone, defaulting to UTC:', error);
+    return 'UTC';
+  }
+}
+
+/**
+ * Convert a time to user's timezone
+ * @param date Date to convert
+ * @param timezone Target timezone (defaults to user's timezone)
+ * @returns Date in the target timezone
+ */
+export function convertToUserTimezone(date: Date, timezone?: string): Date {
+  const userTimezone = timezone || getUserTimezone();
+  
+  try {
+    // Create a date in the user's timezone
+    const timeInUserTimezone = new Date(date.toLocaleString('en-US', { timeZone: userTimezone }));
+    
+    // Calculate the timezone offset difference
+    const userTimezoneOffset = timeInUserTimezone.getTime() - date.getTime();
+    
+    // Apply the offset to get the correct local time
+    return new Date(date.getTime() + userTimezoneOffset);
+  } catch (error) {
+    console.warn('Failed to convert timezone, using original time:', error);
+    return date;
+  }
+}
+
+/**
+ * Get current time in a specific timezone
+ * @param timezone Target timezone (defaults to user's timezone)
+ * @returns Current time in the specified timezone
+ */
+export function getCurrentTimeInTimezone(timezone?: string): Date {
+  const userTimezone = timezone || getUserTimezone();
+  
+  try {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: userTimezone }));
+  } catch (error) {
+    console.warn('Failed to get current time in timezone, using local time:', error);
+    return new Date();
+  }
+}
+
+/**
+ * Schedule a timezone-aware alarm
+ * @param targetTime The time to trigger the alarm
+ * @param title Notification title
+ * @param body Notification body
+ * @param timezone Target timezone (defaults to user's timezone)
+ * @returns Timer ID for cancellation
+ */
+export function scheduleTimezoneAwareAlarm(
+  targetTime: Date,
+  title: string,
+  body: string,
+  timezone?: string
+): number | null {
+  try {
+    const userTimezone = timezone || getUserTimezone();
+    const currentTime = getCurrentTimeInTimezone(userTimezone);
+    const alarmTime = convertToUserTimezone(targetTime, userTimezone);
+    
+    const millisecondsUntilAlarm = alarmTime.getTime() - currentTime.getTime();
+    
+    if (millisecondsUntilAlarm <= 0) {
+      console.warn('Alarm time is in the past, not scheduling');
+      return null;
+    }
+    
+    console.log(`Scheduling alarm for ${alarmTime.toLocaleString()} (${userTimezone})`);
+    
+    return window.setTimeout(() => {
+      // Check if browser supports notifications
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(title, {
+          body: `${body} (${userTimezone})`,
+          icon: '/favicon.ico',
+          requireInteraction: true,
+        });
+        
+        // Play alarm sound if available
+        try {
+          const alarmAudio = new Audio('/audio/alarm-tone.mp3');
+          alarmAudio.play().catch(e => 
+            console.warn("Audio play failed (user interaction might be needed, or file missing):", e)
+          );
+        } catch (error) {
+          console.warn("Error playing alarm sound:", error);
+        }
+      } else {
+        console.warn('Notifications not supported or permission not granted');
+      }
+    }, millisecondsUntilAlarm);
+    
+  } catch (error) {
+    console.error('Failed to schedule timezone-aware alarm:', error);
+    return null;
+  }
 }
 
 function toRad(degrees: number): number {

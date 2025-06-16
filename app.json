@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "c2861d1c-117f-400e-abee-4fd47b8e36d3"
+      }
+    },
+    "android": {
+      "package": "com.amardattadola.srigurudigvandanamapp"
+    }
+  }
+}

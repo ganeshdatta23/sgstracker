@@ -4,6 +4,8 @@ import { Magnetometer } from 'expo-sensors';
 import Svg, { Circle, Text as SvgText, Line, Polygon, G } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { Animated, Easing } from 'react-native';
+import * as Location from 'expo-location';
+import { Coordinates, calculateBearing } from '../utils/locationUtils';
 
 const { width, height } = Dimensions.get('window');
 
@@ -16,23 +18,32 @@ function getCardinalDirection(angle: number | null): string {
 
 interface CompassViewProps {
   targetHeading?: number | null;
+  /** If provided, the component will compute the bearing from the user's
+   * current location to this destination and override targetHeading. */
+  targetLocation?: Coordinates | null;
+  /** Notifies parent whenever alignment status toggles */
+  onAlignmentChange?: (aligned: boolean) => void;
 }
 
 interface Subscription {
   remove: () => void;
 }
 
-const FACING_THRESHOLD_DEGREES = 5;
+const FACING_THRESHOLD_DEGREES = 9;
 
 // Animated SVG text component for smoothly counter-rotating the labels
 const AnimatedSvgText = Animated.createAnimatedComponent(SvgText);
 
-export default function CompassView({ targetHeading = 45 }: CompassViewProps) {
+export default function CompassView({ targetHeading: propTargetHeading = 45, targetLocation = null, onAlignmentChange }: CompassViewProps) {
   const [heading, setHeading] = useState<number | null>(null);
+  const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   // Keep sensor subscription in a ref so that the cleanup inside useEffect
   // always has access to the latest value without re-running the effect.
   const subscriptionRef = useRef<Subscription | null>(null);
   const [isCalibrating, setIsCalibrating] = useState(false);
+  
+  // Track if we've already triggered haptics for current alignment
+  const hasTriggeredHapticsRef = useRef(false);
 
   /**
    * Low-pass filter coefficient. 0 → no smoothing, 1 → maximum smoothing.
@@ -90,15 +101,88 @@ export default function CompassView({ targetHeading = 45 }: CompassViewProps) {
     }
   }, [heading]);
 
+  // Subscribe to user location if targetLocation is provided
+  useEffect(() => {
+    let locationSubscription: Location.LocationSubscription | null = null;
+
+    const startLocationUpdates = async () => {
+      if (!targetLocation) return; // No need to request location if we only have static heading
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.warn('Permission to access location was denied');
+        return;
+      }
+
+      locationSubscription = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          distanceInterval: 1, // meters
+        },
+        (loc) => {
+          setUserLocation({
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+          });
+        }
+      );
+    };
+
+    startLocationUpdates();
+
+    return () => {
+      locationSubscription?.remove();
+    };
+  }, [targetLocation]);
+
+  // Compute dynamic target heading whenever either location updates
+  const dynamicTargetHeading = React.useMemo(() => {
+    if (targetLocation && userLocation) {
+      return calculateBearing(
+        userLocation.latitude,
+        userLocation.longitude,
+        targetLocation.latitude,
+        targetLocation.longitude
+      );
+    }
+    return null;
+  }, [targetLocation, userLocation]);
+
+  // Choose which heading to guide towards
+  const effectiveTargetHeading = dynamicTargetHeading ?? propTargetHeading;
+
   // Determine if facing target direction
   const isFacingTarget = 
-    targetHeading !== null && heading !== null &&
+    effectiveTargetHeading !== null && heading !== null &&
     Math.min(
-      Math.abs(targetHeading - heading),
-      360 - Math.abs(targetHeading - heading)
+      Math.abs(effectiveTargetHeading - heading),
+      360 - Math.abs(effectiveTargetHeading - heading)
     ) <= FACING_THRESHOLD_DEGREES;
 
-  const compassSize = Math.min(width, height) * 0.7;
+  // Notify parent when alignment state changes
+  useEffect(() => {
+    if (onAlignmentChange) {
+      onAlignmentChange(isFacingTarget);
+    }
+    
+    // Handle haptics - only trigger once when first becoming aligned
+    if (isFacingTarget && !hasTriggeredHapticsRef.current) {
+      // Trigger haptic feedback for 1-2 seconds
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      hasTriggeredHapticsRef.current = true;
+      
+      // Stop haptics after 2 seconds
+      setTimeout(() => {
+        // Note: There's no direct way to "stop" haptics in Expo, but we prevent retriggering
+        // The vibration will naturally stop after the notification pattern completes
+      }, 2000);
+    } else if (!isFacingTarget) {
+      // Reset the haptics flag when no longer aligned
+      hasTriggeredHapticsRef.current = false;
+    }
+  }, [isFacingTarget, onAlignmentChange]);
+
+  // Larger dial: use 85% of the smaller screen dimension (previously 70%)
+  const compassSize = Math.min(width, height) * 0.8;
   const compassRadius = compassSize / 2;
   const centerX = compassSize / 2;
   const centerY = compassSize / 2;
@@ -115,17 +199,18 @@ export default function CompassView({ targetHeading = 45 }: CompassViewProps) {
     ],
   } as const;
 
-  if (isFacingTarget) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  // Haptics now handled in useEffect above to prevent continuous triggering
 
   // Generate degree markings
   const renderDegreeMarkings = () => {
     const markings = [];
     
-    for (let i = 0; i < 360; i += 10) {
+    // Tick marks every 5°
+    for (let i = 0; i < 360; i += 5) {
       const isCardinal = i % 90 === 0;
       const isMajor = i % 30 === 0;
-      const markLength = isCardinal ? 25 : isMajor ? 15 : 8;
-      const strokeWidth = isCardinal ? 3 : isMajor ? 2 : 1;
+      const markLength = isCardinal ? 20 : isMajor ? 15 : 6; // minor tick shorter
+      const strokeWidth = isCardinal ? 3 : isMajor ? 1.5 : 1;
       
       const startRadius = compassRadius - 10;
       const endRadius = startRadius - markLength;
@@ -150,16 +235,22 @@ export default function CompassView({ targetHeading = 45 }: CompassViewProps) {
     return markings;
   };
 
+  // Compute align turn instruction
+  const getTurnInstruction = () => {
+    if (effectiveTargetHeading === null || heading === null) return "--";
+    let delta = ((effectiveTargetHeading - heading + 540) % 360) - 180; // [-180,180]
+    const absDelta = Math.abs(delta);
+    if (absDelta <= FACING_THRESHOLD_DEGREES) return "Aligned ✓";
+    const arrow = delta > 0 ? "→" : "←";
+    const dirWord = delta > 0 ? "right" : "left";
+    return `Turn ${arrow} ${dirWord} ${absDelta.toFixed(0)}°`;
+  };
+
   return (
     <View style={styles.container}>
-      {/* Digital Readout */}
+      {/* Minimalist HUD */}
       <View style={styles.digitalReadout}>
-        <Text style={styles.headingText}>
-          {heading !== null ? `${heading.toFixed(0)}°` : "--°"}
-        </Text>
-        <Text style={styles.directionText}>
-          {getCardinalDirection(heading)}
-        </Text>
+        <Text style={styles.turnText}>{getTurnInstruction()}</Text>
       </View>
 
       {/* Compass Visual */}
@@ -175,11 +266,11 @@ export default function CompassView({ targetHeading = 45 }: CompassViewProps) {
             /> */}
             <Line
               x1="20"
-              y1="10"
+              y1="15"
               x2="20"
               y2="43"
-              stroke="white"
-              strokeWidth="4"
+              stroke="red"
+              strokeWidth="3"
             />
           </Svg>
         </View>
@@ -187,24 +278,22 @@ export default function CompassView({ targetHeading = 45 }: CompassViewProps) {
         {/* Rotating Compass Dial */}
         <Animated.View style={[styles.compassDial, dialRotateStyle]}>
           <Svg width={compassSize + 50} height={compassSize + 50} style={styles.compass}>
-            {/* Outer circle */}
+            {/* Outer circle (no fill for minimal look) */}
             <Circle
               cx={(compassSize + 50) / 2}
               cy={(compassSize + 50) / 2}
               r={compassRadius - 10}
               stroke="#444"
-              strokeWidth="3"
-              fill="rgba(0, 0, 0, 0.3)"
+              strokeWidth="1"
+              fill="none"
             />
-            
-            {/* Inner circle */}
+
+            {/* Center HUD dot */}
             <Circle
               cx={(compassSize + 50) / 2}
               cy={(compassSize + 50) / 2}
-              r={compassRadius - 60}
-              stroke="#666"
-              strokeWidth="1"
-              fill="none"
+              r="6"
+              fill="#fff"
             />
             
             {/* Degree markings and numbers */}
@@ -213,9 +302,9 @@ export default function CompassView({ targetHeading = 45 }: CompassViewProps) {
             </G>
             
             {/* Target direction indicator on perimeter */}
-            {targetHeading !== null && (
+            {effectiveTargetHeading !== null && (
               <G transform={`translate(25, 25)`}>
-                <G transform={`rotate(${targetHeading} ${centerX} ${centerY})`}>
+                <G transform={`rotate(${effectiveTargetHeading} ${centerX} ${centerY})`}>
                   <Circle
                     cx={centerX}
                     cy={15}
@@ -233,17 +322,21 @@ export default function CompassView({ targetHeading = 45 }: CompassViewProps) {
             {['N','E','S','W'].map((dir, idx) => {
               // 0°=N, 90°=E, 180°=S, 270°=W
               const angle = idx * 90;
-              const labelX = (compassSize + 50) / 2 + (compassRadius - 25) * Math.sin((angle * Math.PI) / 180);
-              const labelY = (compassSize + 50) / 2 - (compassRadius - 25) * Math.cos((angle * Math.PI) / 180) + (dir==='N'?0:10);
+              // Place labels on an inner ring to avoid colliding with external UI
+              const labelRadius = compassRadius - 53; // 50px inside the outer rim
+              const labelX = (compassSize + 50) / 2 + labelRadius * Math.sin((angle * Math.PI) / 180);
+              const labelY = (compassSize + 50) / 2 - labelRadius * Math.cos((angle * Math.PI) / 180) + (dir==='N'?0:8);
 
               // Counter-rotation so text stays upright; dialRotation is negative heading.
               const counterRotation = dialRotation.interpolate({
                 inputRange: [-360, 0, 360],
                 outputRange: ['rotate(360 ' + labelX + ' ' + labelY + ')', 'rotate(0 ' + labelX + ' ' + labelY + ')', 'rotate(-360 ' + labelX + ' ' + labelY + ')'],
               });
-
-              const color = dir === 'N' ? '#ff4444' : '#fff';
-              const fontSize = dir === 'N' ? 28 : 24;
+              // North is red, E, S, W are white
+              // const color = dir === 'N' ? '#ff4444' : '#fff';
+              // const fontSize = dir === 'N' ? 25 : 24;
+              const color = '#fff';
+              const fontSize = dir === 'N' ? 24 : 24;
 
               return (
                 <AnimatedSvgText
@@ -267,9 +360,9 @@ export default function CompassView({ targetHeading = 45 }: CompassViewProps) {
 
       {/* Status indicators */}
       <View style={styles.statusContainer}>
-        {targetHeading !== null && (
+        {effectiveTargetHeading !== null && (
           <Text style={[styles.statusText, { color: isFacingTarget ? '#00ff00' : '#ffaa00' }]}>
-            Target: {targetHeading.toFixed(0)}° ({getCardinalDirection(targetHeading)})
+            Target: {effectiveTargetHeading.toFixed(0)}° ({getCardinalDirection(effectiveTargetHeading)})
           </Text>
         )}
         <Text style={[styles.statusText, { color: isFacingTarget ? '#00ff00' : '#fff' }]}>
@@ -298,16 +391,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#333',
   },
-  headingText: {
-    fontSize: 36,
-    fontWeight: 'bold',
+  turnText: {
+    fontSize: 20,
     color: '#00ffff',
-    fontFamily: 'monospace',
-  },
-  directionText: {
-    fontSize: 18,
-    color: '#fff',
-    marginTop: 5,
+    fontWeight: 'bold',
   },
   compassContainer: {
     alignItems: 'center',
