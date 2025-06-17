@@ -1,4 +1,4 @@
-package com.amardattadola.darshanamcompass
+package com.gurudigbandanam
 
 import android.app.Application
 import android.content.res.Configuration
