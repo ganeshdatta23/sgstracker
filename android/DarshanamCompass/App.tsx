@@ -92,27 +92,32 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Guru Digbandanam</Text>
-        {nextSunEvent && (
-          <Text style={styles.sunEventText}>
-            Next {nextSunEvent.type}: {formatSunTime(nextSunEvent.time)}
-            {nextSunEvent.isToday ? ' today' : ' tomorrow'}
-          </Text>
-        )}
-      </View>
+      {/* Render header & compass only when NOT aligned */}
+      {!isAligned && (
+        <>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.title}>Guru Digbandanam</Text>
+            {nextSunEvent && (
+              <Text style={styles.sunEventText}>
+                Next {nextSunEvent.type}: {formatSunTime(nextSunEvent.time)}
+                {nextSunEvent.isToday ? ' today' : ' tomorrow'}
+              </Text>
+            )}
+          </View>
 
-      {/* Compass Component */}
-      {parsedTarget ? (
-        <CompassView targetLocation={parsedTarget} onAlignmentChange={setIsAligned} />
-      ) : (
-        <CompassView targetHeading={45} onAlignmentChange={setIsAligned} />
+          {/* Compass Component */}
+          {parsedTarget ? (
+            <CompassView targetLocation={parsedTarget} onAlignmentChange={setIsAligned} />
+          ) : (
+            <CompassView targetHeading={45} onAlignmentChange={setIsAligned} />
+          )}
+        </>
       )}
 
       {/* Darshan overlay */}
       {isAligned && (
-        <View style={styles.overlay} pointerEvents="box-none">
+        <View style={styles.overlay} /* overlay blocks touches */>
           {/* Background video */}
           <Video
             style={StyleSheet.absoluteFill}
