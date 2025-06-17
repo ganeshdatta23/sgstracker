@@ -27,16 +27,18 @@ interface SunCalculationResult {
 // SunriseSunset.io API response interface
 interface SunriseSunsetApiResponse {
   results: {
+    date: string;
     sunrise: string;
     sunset: string;
+    first_light: string;
+    last_light: string;
+    dawn: string;
+    dusk: string;
     solar_noon: string;
+    golden_hour: string;
     day_length: string;
-    civil_twilight_begin: string;
-    civil_twilight_end: string;
-    nautical_twilight_begin: string;
-    nautical_twilight_end: string;
-    astronomical_twilight_begin: string;
-    astronomical_twilight_end: string;
+    timezone: string;
+    utc_offset: number;
   };
   status: string;
 }
@@ -88,9 +90,9 @@ export async function calculateSunTimes(
     }
     
     // Parse times - API returns in local timezone
-    const sunrise = new Date(`${dateStr}T${data.results.sunrise}:00`);
-    const sunset = new Date(`${dateStr}T${data.results.sunset}:00`);
-    const solarNoon = new Date(`${dateStr}T${data.results.solar_noon}:00`);
+    const sunrise = new Date(`${dateStr}T${data.results.sunrise}`);
+    const sunset = new Date(`${dateStr}T${data.results.sunset}`);
+    const solarNoon = new Date(`${dateStr}T${data.results.solar_noon}`);
     
     // Determine next event (simplified - no recursive calls)
     const now = new Date();
